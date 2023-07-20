@@ -52,3 +52,29 @@
 .navigation button:hover{
     background-color: rgb(173, 173, 173);
 }
+
+.type{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    font-size: 24px;
+}
+
+.type button{
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 15px;
+}
+
+.red{
+    color: red;
+}
+
+.green{
+    color: green;
+}
+
+.blue{
+    color: blue
+}
