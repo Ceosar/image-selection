@@ -1,9 +1,24 @@
+/* font-family: 'Roboto', sans-serif; */
+
 html,
-body{
-  height: 100vh;
+body,
+#root{
+  height: 100%;
   width: 100vw;
 }
 
 body{
-  background-color: grey;
+  background-color: rgba(142, 121, 91, 0.588);
+  font-family: 'Roboto', sans-serif;
+  font-style: 16px;
+}
+
+.wrapper{
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main{
+  flex-grow: 1;
 }
