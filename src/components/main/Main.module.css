@@ -15,20 +15,6 @@
     flex-direction: column;
 }
 
-.open_btn{
-    margin: 5px 10px;
-    padding: 5px 10px;
-    font-size: 24px;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    cursor: pointer;
-    transition: all .4s;
-}
-
-.open_btn:hover{
-    background-color: rgb(173, 173, 173);
-}
-
 .image_content{
     height: 800px;
     display: flex;
@@ -45,5 +31,24 @@
 .navigation{
     display: flex;
     justify-content: space-around;
+    align-items: center;
     font-size: 25px;
+}
+
+.navigation p{
+    width: 100px;
+}
+
+.navigation button{
+    margin: 5px 10px;
+    padding: 5px 10px;
+    font-size: 24px;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    cursor: pointer;
+    transition: all .4s;
+}
+
+.navigation button:hover{
+    background-color: rgb(173, 173, 173);
 }

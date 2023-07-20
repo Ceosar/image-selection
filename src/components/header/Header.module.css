@@ -26,7 +26,6 @@
     background-color: rgb(173, 173, 173);
 }
 
-.image{
-    width: 100px;
-    height: 100px;
+.open_btn input[type="file"]{
+    display: none;
 }
