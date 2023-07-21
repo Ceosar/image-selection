@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import classes from "./Main.module.css"
 import ReactCrop from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
@@ -13,6 +13,7 @@ const Main = ({ selectedImages }) => {
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
     const [selectedType, setSelectedType] = useState(null);
+    const [activeType, setActiveType] = useState(null);
 
     const prevImage = () => {
         setCurrentIndex(currentIndex - 1);
@@ -43,7 +44,7 @@ const Main = ({ selectedImages }) => {
     }
 
     const onCompleteCrop = (crop) => {
-        if (crop.width > 0 && crop.height > 0) {
+        if (crop.width > 0 && crop.height > 0 && selectedType) {
             const newCroppedArea = {
                 x: crop.x,
                 y: crop.y,
@@ -52,6 +53,7 @@ const Main = ({ selectedImages }) => {
                 type: selectedType
             };
             setCroppedAreas([...croppedAreas, newCroppedArea]);
+            setCrop(null);
         }
     }
 
@@ -63,8 +65,6 @@ const Main = ({ selectedImages }) => {
                 return "blue";
             case "green":
                 return "green";
-            default:
-                return "red";
         }
     }
 
@@ -120,15 +120,15 @@ const Main = ({ selectedImages }) => {
                         </button>
                     </section>
                     <section className={classes.type}>
-                        <button className={classes.red} onClick={() => {
+                        <button className={`${classes.type_btn_red}`} onClick={() => {
                             setSelectedType("red");
                             setCrop(null);
                         }}>Счётчик</button>
-                        <button className={classes.green} onClick={() => {
+                        <button className={classes.type_btn_green} onClick={() => {
                             setSelectedType("green");
                             setCrop(null);
                         }}>Пломба</button>
-                        <button className={classes.blue} onClick={() => {
+                        <button className={classes.type_btn_blue} onClick={() => {
                             setSelectedType("blue")
                             setCrop(null);
                         }}>Показание</button>

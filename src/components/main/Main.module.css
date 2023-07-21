@@ -55,23 +55,40 @@
     font-size: 24px;
 }
 
-.type button{
+.type_btn_red{
     margin: 10px;
     padding: 10px;
     border: 1px solid black;
     border-radius: 15px;
-}
-
-.red{
     color: red;
 }
 
-.green{
+.type_btn_green{
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 15px;
     color: green;
 }
 
-.blue{
-    color: blue
+.type_btn_blue{
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 15px;
+    color: blue;
+}
+
+.type_btn_red_active{
+    background-color: orange;
+}
+
+.type_btn_green_active{
+    background-color: orange;
+}
+
+.type_btn_blue_active{
+    background-color: orange;
 }
 
 .properties{
