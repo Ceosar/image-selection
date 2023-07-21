@@ -40,17 +40,12 @@
 }
 
 .navigation button{
-    margin: 5px 10px;
-    padding: 5px 10px;
-    font-size: 24px;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    cursor: pointer;
+    width: 50px;
     transition: all .4s;
 }
 
 .navigation button:hover{
-    background-color: rgb(173, 173, 173);
+    transform: scale(110%);
 }
 
 .type{
@@ -77,4 +72,30 @@
 
 .blue{
     color: blue
+}
+
+.properties{
+    margin: 0 auto;
+    width: 500px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.properties button{
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 15px;
+}
+
+.prop_yellow{
+    background-color: orange;
+}
+
+.prop_red{
+    background-color: red;
+}
+
+.prop_green{
+    background-color:green;
 }

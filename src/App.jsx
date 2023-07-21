@@ -14,8 +14,8 @@ function App() {
           <Header setSelectedImages={setSelectedImages} />
         </header>
         <main className="main">
-          {/* {selectedImages.length == 0 ? null :<Main selectedImages={selectedImages} />} */}
-          <Main selectedImages={selectedImages} />
+          {selectedImages.length == 0 ? null :<Main selectedImages={selectedImages} />}
+          {/* <Main selectedImages={selectedImages} /> */}
         </main>
         <footer className="footer">
           {/* <Footer /> */}
