@@ -14,6 +14,10 @@ const Main = ({ selectedImages }) => {
     const [croppedAreas, setCroppedAreas] = useState([]);
     const [selectedType, setSelectedType] = useState(null);
     const [activeType, setActiveType] = useState(null);
+    const [state, setState] = useState({
+        images: [],
+        rect: []
+    })
 
     const prevImage = () => {
         setCurrentIndex(currentIndex - 1);
@@ -60,11 +64,49 @@ const Main = ({ selectedImages }) => {
             };
             setCroppedAreas([...croppedAreas, newCroppedArea]);
             setCrop(null);
-            localStorage.setItem("rect", JSON.stringify(newCroppedArea))
-
+            setRect(newCroppedArea);
         }
     }
 
+    const setRect = (newCroppedArea) => {
+        setState((prevState) => ({
+            ...prevState,
+            rect: [...prevState.rect, newCroppedArea]
+        }));
+    };
+
+    // function setRect(rect, newCroppedArea, props) {
+    //     var found_id = -1;
+    //     props = {
+    //         name: newCroppedArea.name,
+    //         id: newCroppedArea.id,
+    //         x: newCroppedArea.x,
+    //         y: newCroppedArea.y,
+    //         width: newCroppedArea.width,
+    //         height: newCroppedArea.height,
+    //         type: newCroppedArea.type
+    //     };
+    //     console.log('1')
+    //     rect.forEach((element, index) => {
+    //         console.log(element)
+    //         if (element.id == id) {
+    //             found_id = index;
+    //         }
+    //     });
+
+    //     if (found_id >= 0) {
+    //         rect[found_id] = Object.assign(props);
+    //     } else {
+    //         rect.push(Object.assign(props));
+    //         pushDataToStorage();
+    //     }
+    // }
+
+    const pushDataToStorage = () => {
+        localStorage.setItem("state", JSON.stringify(state));
+    }
+
+    pushDataToStorage();
     const getBorderColorByType = (type) => {
         switch (type) {
             case "red":
@@ -90,7 +132,7 @@ const Main = ({ selectedImages }) => {
                 setSelectedType("red");
                 setCrop(null);
                 setActiveType("red");
-            } else if (e.code === "Digit2") {
+            } if (e.code === "Digit2") {
                 setSelectedType("green");
                 setCrop(null);
                 setActiveType("green");
@@ -110,7 +152,10 @@ const Main = ({ selectedImages }) => {
                         <section className={classes.properties}>
                             <button className={classes.prop_red}>Нет элементов</button>
                             <button className={classes.prop_yellow}
-                                onClick={() => setCroppedAreas([])}
+                                onClick={() => {
+                                    setCroppedAreas([]);
+                                    setState({ rect: [] });
+                                }}
                             >Сброс</button>
                             <button className={classes.prop_green}>Готово</button>
                         </section>
