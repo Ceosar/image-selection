@@ -1,21 +1,21 @@
-.wrapper{
+.wrapper {
     width: 100%;
     height: 100px;
 }
 
-.container{
+.container {
     width: 1100px;
     margin: 0 auto;
 }
 
-.content_container{
+.content_container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
-.image_content{
+.image_content {
     height: 800px;
     display: flex;
     justify-content: center;
@@ -23,96 +23,99 @@
     flex-direction: column;
 }
 
-.image{
+.image {
     max-height: 700px;
     background-size: cover;
 }
 
-.navigation{
+.navigation {
     display: flex;
     justify-content: space-around;
     align-items: center;
     font-size: 25px;
 }
 
-.navigation p{
+.navigation p {
     width: 100px;
 }
 
-.navigation button{
+.navigation button {
     width: 50px;
     transition: all .4s;
 }
 
-.navigation button:hover{
+.navigation button:hover {
     transform: scale(110%);
 }
 
-.type{
+.type {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     font-size: 24px;
 }
 
-.type_btn_red{
+.type_btn_red {
     margin: 10px;
     padding: 10px;
-    border: 1px solid black;
+    border: 4px solid red;
     border-radius: 15px;
     color: red;
+    font-weight: 900;
 }
 
-.type_btn_green{
+.type_btn_green {
     margin: 10px;
     padding: 10px;
-    border: 1px solid black;
+    border: 4px solid green;
     border-radius: 15px;
     color: green;
+    font-weight: 900;
 }
 
-.type_btn_blue{
+.type_btn_blue {
     margin: 10px;
     padding: 10px;
-    border: 1px solid black;
+    border: 4px solid blue;
     border-radius: 15px;
     color: blue;
+    font-weight: 900;
 }
 
-.type_btn_red_active{
+.type_btn_red_active {
     background-color: orange;
 }
 
-.type_btn_green_active{
+.type_btn_green_active {
     background-color: orange;
 }
 
-.type_btn_blue_active{
+.type_btn_blue_active {
     background-color: orange;
 }
 
-.properties{
+.properties {
     margin: 0 auto;
     width: 500px;
     display: flex;
     justify-content: space-around;
 }
 
-.properties button{
+.properties button {
     margin: 10px;
     padding: 10px;
     border: 1px solid black;
     border-radius: 15px;
 }
 
-.prop_yellow{
+.prop_yellow {
     background-color: orange;
 }
 
-.prop_red{
+.prop_red {
     background-color: red;
 }
 
-.prop_green{
-    background-color:green;
+.prop_green {
+    background-color: green;
 }
