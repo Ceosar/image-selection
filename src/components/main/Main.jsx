@@ -15,7 +15,6 @@ const Main = ({ selectedImages }) => {
     const [selectedType, setSelectedType] = useState(null);
     const [activeType, setActiveType] = useState(null);
     const [state, setState] = useState({
-        images: [],
         rect: []
     })
 
@@ -75,45 +74,18 @@ const Main = ({ selectedImages }) => {
         }));
     };
 
-    // function setRect(rect, newCroppedArea, props) {
-    //     var found_id = -1;
-    //     props = {
-    //         name: newCroppedArea.name,
-    //         id: newCroppedArea.id,
-    //         x: newCroppedArea.x,
-    //         y: newCroppedArea.y,
-    //         width: newCroppedArea.width,
-    //         height: newCroppedArea.height,
-    //         type: newCroppedArea.type
-    //     };
-    //     console.log('1')
-    //     rect.forEach((element, index) => {
-    //         console.log(element)
-    //         if (element.id == id) {
-    //             found_id = index;
-    //         }
-    //     });
-
-    //     if (found_id >= 0) {
-    //         rect[found_id] = Object.assign(props);
-    //     } else {
-    //         rect.push(Object.assign(props));
-    //         pushDataToStorage();
-    //     }
-    // }
-
     const pushDataToStorage = () => {
         localStorage.setItem("state", JSON.stringify(state));
     }
-
     pushDataToStorage();
+
     const getBorderColorByType = (type) => {
         switch (type) {
-            case "red":
+            case "meter":
                 return "red";
-            case "blue":
+            case "indication":
                 return "blue";
-            case "green":
+            case "seal":
                 return "green";
             default:
                 return "";
@@ -129,20 +101,44 @@ const Main = ({ selectedImages }) => {
     useEffect(() => {
         window.addEventListener('keypress', (e) => {
             if (e.code === "Digit1") {
-                setSelectedType("red");
+                setSelectedType("meter");
                 setCrop(null);
-                setActiveType("red");
+                setActiveType("meter");
             } if (e.code === "Digit2") {
-                setSelectedType("green");
+                setSelectedType("seal");
                 setCrop(null);
-                setActiveType("green");
+                setActiveType("seal");
             } else if (e.code === "Digit3") {
-                setSelectedType("blue");
+                setSelectedType("indication");
                 setCrop(null);
-                setActiveType("blue");
+                setActiveType("indication");
             }
         })
-    }, [])
+    }, []);
+
+    const noneType = () => {
+        const newCroppedArea = {
+            name: selectedImages[currentIndex].name,
+            id: selectedImages[currentIndex].url,
+            type: "none"
+        };
+
+        setRect(newCroppedArea);
+    }
+
+    const deleteRect = () => {
+        setCroppedAreas([])
+        const filteredRect = state.rect.filter(
+            (element) => element.name !== selectedImages[currentIndex].name
+        );
+
+        setState((prevState) => ({
+            ...prevState,
+            rect: filteredRect
+        }));
+
+        localStorage.setItem("state", JSON.stringify({ ...state, rect: filteredRect }));
+    };
 
     return (
         <>
@@ -150,12 +146,11 @@ const Main = ({ selectedImages }) => {
                 <div className={classes.container}>
                     <div className={classes.content_container}>
                         <section className={classes.properties}>
-                            <button className={classes.prop_red}>Нет элементов</button>
+                            <button className={classes.prop_red}
+                                onClick={noneType}
+                            >Нет элементов</button>
                             <button className={classes.prop_yellow}
-                                onClick={() => {
-                                    setCroppedAreas([]);
-                                    setState({ rect: [] });
-                                }}
+                                onClick={deleteRect}
                             >Сброс</button>
                             <button className={classes.prop_green}>Готово</button>
                         </section>
@@ -204,27 +199,27 @@ const Main = ({ selectedImages }) => {
                     </section>
                     <section className={classes.type}>
                         <button className={classes.type_btn_red}
-                            style={setButtonStyleBtn("red")}
+                            style={setButtonStyleBtn("meter")}
                             onClick={() => {
-                                setSelectedType("red");
+                                setSelectedType("meter");
                                 setCrop(null);
-                                setActiveType("red");
+                                setActiveType("meter");
                             }}
                         >Счётчик</button>
                         <button className={classes.type_btn_green}
-                            style={setButtonStyleBtn("green")}
+                            style={setButtonStyleBtn("seal")}
                             onClick={() => {
-                                setSelectedType("green");
+                                setSelectedType("seal");
                                 setCrop(null);
-                                setActiveType("green")
+                                setActiveType("seal")
                             }}
                         >Пломба</button>
                         <button className={classes.type_btn_blue}
-                            style={setButtonStyleBtn("blue")}
+                            style={setButtonStyleBtn("indication")}
                             onClick={() => {
-                                setSelectedType("blue")
+                                setSelectedType("indication")
                                 setCrop(null);
-                                setActiveType("blue")
+                                setActiveType("indication")
                             }}
                         >Показание</button>
                     </section>
