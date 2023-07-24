@@ -20,6 +20,7 @@ const Main = ({ selectedImages }) => {
         setCrop(null);
         setCroppedAreas([]);
         setSelectedType(null);
+        setActiveType(null);
     }
 
     const nextImage = () => {
@@ -27,6 +28,7 @@ const Main = ({ selectedImages }) => {
         setCrop(null);
         setCroppedAreas([]);
         setSelectedType(null);
+        setActiveType(null);
     }
 
     const firstImage = () => {
@@ -34,6 +36,7 @@ const Main = ({ selectedImages }) => {
         setCrop(null);
         setCroppedAreas([]);
         setSelectedType(null);
+        setActiveType(null);
     }
 
     const lastImage = () => {
@@ -41,19 +44,25 @@ const Main = ({ selectedImages }) => {
         setCrop(null);
         setCroppedAreas([]);
         setSelectedType(null);
+        setActiveType(null);
     }
 
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
             const newCroppedArea = {
+                name: selectedImages[currentIndex].name,
+                id: selectedImages[currentIndex].url,
                 x: crop.x,
                 y: crop.y,
                 width: crop.width,
                 height: crop.height,
                 type: selectedType
             };
+            console.log(newCroppedArea);
             setCroppedAreas([...croppedAreas, newCroppedArea]);
             setCrop(null);
+            localStorage.setItem("rect", JSON.stringify(newCroppedArea))
+
         }
     }
 
@@ -65,6 +74,14 @@ const Main = ({ selectedImages }) => {
                 return "blue";
             case "green":
                 return "green";
+            default:
+                return "";
+        }
+    }
+
+    const setButtonStyleBtn = (type) => {
+        return {
+            backgroundColor: activeType === type ? "orange" : "initial"
         }
     }
 
@@ -74,8 +91,10 @@ const Main = ({ selectedImages }) => {
                 <div className={classes.container}>
                     <div className={classes.content_container}>
                         <section className={classes.properties}>
-                            <button className={classes.prop_red}>Убрать</button>
-                            <button className={classes.prop_yellow}>Сброс</button>
+                            <button className={classes.prop_red}>Нет элементов</button>
+                            <button className={classes.prop_yellow}
+                                onClick={() => setCroppedAreas([])}
+                            >Сброс</button>
                             <button className={classes.prop_green}>Готово</button>
                         </section>
                         {selectedImages.length > 0 && (
@@ -84,6 +103,7 @@ const Main = ({ selectedImages }) => {
                                     crop={crop}
                                     onChange={c => setCrop(c)}
                                     onComplete={onCompleteCrop}
+                                    disabled={!selectedType}
                                 >
                                     {croppedAreas.map((area, index) => (
                                         <div
@@ -101,6 +121,7 @@ const Main = ({ selectedImages }) => {
                                     ))}
                                     <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} />
                                 </ReactCrop>
+                                <div></div>
                             </div>
                         )}
                     </div>
@@ -120,18 +141,30 @@ const Main = ({ selectedImages }) => {
                         </button>
                     </section>
                     <section className={classes.type}>
-                        <button className={`${classes.type_btn_red}`} onClick={() => {
-                            setSelectedType("red");
-                            setCrop(null);
-                        }}>Счётчик</button>
-                        <button className={classes.type_btn_green} onClick={() => {
-                            setSelectedType("green");
-                            setCrop(null);
-                        }}>Пломба</button>
-                        <button className={classes.type_btn_blue} onClick={() => {
-                            setSelectedType("blue")
-                            setCrop(null);
-                        }}>Показание</button>
+                        <button className={classes.type_btn_red}
+                            style={setButtonStyleBtn("red")}
+                            onClick={() => {
+                                setSelectedType("red");
+                                setCrop(null);
+                                setActiveType("red");
+                            }}
+                        >Счётчик</button>
+                        <button className={classes.type_btn_green}
+                            style={setButtonStyleBtn("green")}
+                            onClick={() => {
+                                setSelectedType("green");
+                                setCrop(null);
+                                setActiveType("green")
+                            }}
+                        >Пломба</button>
+                        <button className={classes.type_btn_blue}
+                            style={setButtonStyleBtn("blue")}
+                            onClick={() => {
+                                setSelectedType("blue")
+                                setCrop(null);
+                                setActiveType("blue")
+                            }}
+                        >Показание</button>
                     </section>
                 </div>
             </div>
