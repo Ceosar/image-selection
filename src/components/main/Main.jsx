@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./Main.module.css"
 import ReactCrop from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
@@ -58,7 +58,6 @@ const Main = ({ selectedImages }) => {
                 height: crop.height,
                 type: selectedType
             };
-            console.log(newCroppedArea);
             setCroppedAreas([...croppedAreas, newCroppedArea]);
             setCrop(null);
             localStorage.setItem("rect", JSON.stringify(newCroppedArea))
@@ -84,6 +83,24 @@ const Main = ({ selectedImages }) => {
             backgroundColor: activeType === type ? "orange" : "initial"
         }
     }
+
+    useEffect(() => {
+        window.addEventListener('keypress', (e) => {
+            if (e.code === "Digit1") {
+                setSelectedType("red");
+                setCrop(null);
+                setActiveType("red");
+            } else if (e.code === "Digit2") {
+                setSelectedType("green");
+                setCrop(null);
+                setActiveType("green");
+            } else if (e.code === "Digit3") {
+                setSelectedType("blue");
+                setCrop(null);
+                setActiveType("blue");
+            }
+        })
+    }, [])
 
     return (
         <>
