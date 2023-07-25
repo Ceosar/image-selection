@@ -8,9 +8,11 @@ body,
 }
 
 body {
-  background-color: rgba(142, 121, 91, 0.588);
+  background: rgb(243, 245, 245);
+  background: linear-gradient(90deg, rgba(243, 245, 245, 1) 0%, rgba(225, 230, 230, 1) 50%, rgba(243, 245, 245, 1) 100%);
   font-family: 'Roboto', sans-serif;
   font-style: 16px;
+  color: rgb(39, 39, 41);
 }
 
 .wrapper {

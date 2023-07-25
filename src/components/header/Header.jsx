@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./Header.module.css"
 
 const Header = ({ setSelectedImages }) => {
@@ -27,7 +27,10 @@ const Header = ({ setSelectedImages }) => {
     const pushDataToStorage = () => {
         localStorage.setItem("state2", JSON.stringify(img));
     }
-    pushDataToStorage();
+
+    useEffect(() => {
+        pushDataToStorage();
+    }, [img])
 
     return (
         <>
