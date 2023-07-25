@@ -190,7 +190,7 @@ const Main = ({ selectedImages }) => {
         const savedState = localStorage.getItem("state");
         if (savedState) {
             const parsedState = JSON.parse(savedState);
-            setState(parsedState); 1
+            setState(parsedState);
             checkPrev();
         }
     }, [currentIndex]);
@@ -240,35 +240,35 @@ const Main = ({ selectedImages }) => {
                             </div>
                         )}
                     </div>
-                        <section className={classes.navigation}>
-                            <button onClick={() => swipeImage(STEP3)}>
-                                <img src={two_arrow_left} alt="" />
-                            </button>
-                            <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
-                                <img src={one_arrow_left} alt="" />
-                            </button>
-                            <p>{currentIndex + 1}/{selectedImages.length}</p>
-                            <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (selectedImages.length - 1)}>
-                                <img src={one_arrow_right} alt="" />
-                            </button>
-                            <button onClick={() => swipeImage(STEP4)}>
-                                <img src={two_arrow_right} alt="" />
-                            </button>
-                        </section>
-                        <section className={classes.type}>
-                            <button className={classes.type_btn_red}
-                                style={setButtonStyleBtn(DEFAULT_TYPE1)}
-                                onClick={() => swipeType(DEFAULT_TYPE1)}
-                            >Счётчик</button>
-                            <button className={classes.type_btn_green}
-                                style={setButtonStyleBtn(DEFAULT_TYPE2)}
-                                onClick={() => swipeType(DEFAULT_TYPE2)}
-                            >Пломба</button>
-                            <button className={classes.type_btn_blue}
-                                style={setButtonStyleBtn(DEFAULT_TYPE3)}
-                                onClick={() => swipeType(DEFAULT_TYPE3)}
-                            >Показание</button>
-                        </section>
+                    <section className={classes.navigation}>
+                        <button onClick={() => swipeImage(STEP3)} disabled={currentIndex == 0}>
+                            <img src={two_arrow_left} alt="" />
+                        </button>
+                        <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
+                            <img src={one_arrow_left} alt="" />
+                        </button>
+                        <p>{currentIndex + 1}/{selectedImages.length}</p>
+                        <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (selectedImages.length - 1)}>
+                            <img src={one_arrow_right} alt="" />
+                        </button>
+                        <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (selectedImages.length - 1)}>
+                            <img src={two_arrow_right} alt="" />
+                        </button>
+                    </section>
+                    <section className={classes.type}>
+                        <button className={classes.type_btn_red}
+                            style={setButtonStyleBtn(DEFAULT_TYPE1)}
+                            onClick={() => swipeType(DEFAULT_TYPE1)}
+                        >Счётчик</button>
+                        <button className={classes.type_btn_green}
+                            style={setButtonStyleBtn(DEFAULT_TYPE2)}
+                            onClick={() => swipeType(DEFAULT_TYPE2)}
+                        >Пломба</button>
+                        <button className={classes.type_btn_blue}
+                            style={setButtonStyleBtn(DEFAULT_TYPE3)}
+                            onClick={() => swipeType(DEFAULT_TYPE3)}
+                        >Показание</button>
+                    </section>
                 </div>
             </div>
         </>

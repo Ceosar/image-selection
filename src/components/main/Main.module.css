@@ -16,8 +16,7 @@
 }
 
 .image_content {
-    min-height: 600px;
-    max-height: 700px;
+    /* min-height: 1000px; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,8 +24,8 @@
 }
 
 .image {
-    max-height: 700px;
-    background-size: cover;
+    /* max-height: 800px; */
+    /* background-size: nocover; */
 }
 
 .navigation {
