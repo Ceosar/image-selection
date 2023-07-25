@@ -9,47 +9,66 @@ import two_arrow_left from "../../assets/two_arrow_left.png"
 import two_arrow_right from "../../assets/two_arrow_right.png"
 
 const Main = ({ selectedImages }) => {
+    const DEFAULT_TYPE1 = "meter";
+    const DEFAULT_TYPE2 = "seal";
+    const DEFAULT_TYPE3 = "indication";
+
+    const STEP1 = "next";
+    const STEP2 = "prev";
+    const STEP3 = "first";
+    const STEP4 = "last";
+
     const [currentIndex, setCurrentIndex] = useState(0);
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
-    const [selectedType, setSelectedType] = useState("meter");
-    const [activeType, setActiveType] = useState("meter");
+    const [selectedType, setSelectedType] = useState(DEFAULT_TYPE1);
+    const [activeType, setActiveType] = useState(DEFAULT_TYPE1);
     const [state, setState] = useState({
         rect: []
     })
 
-    const prevImage = () => {
-        setCurrentIndex(currentIndex - 1);
+    const swipeImage = (arg) => {
+        switch (arg) {
+            case STEP1:
+                setCurrentIndex(currentIndex + 1);
+                break;
+            case STEP2:
+                setCurrentIndex(currentIndex - 1)
+                break;
+            case STEP3:
+                setCurrentIndex(0);
+                break;
+            case STEP4:
+                setCurrentIndex(selectedImages.length - 1);
+            default:
+                break;
+        }
         setCrop(null);
         setCroppedAreas([]);
-        setSelectedType("meter");
-        setActiveType("meter");
+        setSelectedType(DEFAULT_TYPE1);
+        setActiveType(DEFAULT_TYPE1);
     }
 
-    const nextImage = () => {
-        setCurrentIndex(currentIndex + 1);
+    const swipeType = (type) => {
         setCrop(null);
-        setCroppedAreas([]);
-        setSelectedType("meter");
-        setActiveType("meter");
-    }
+        switch (type) {
+            case DEFAULT_TYPE1:
+                setSelectedType(DEFAULT_TYPE1)
+                setActiveType(DEFAULT_TYPE1)
+                break;
+            case DEFAULT_TYPE2:
+                setSelectedType(DEFAULT_TYPE2)
+                setActiveType(DEFAULT_TYPE2)
+                break;
+            case DEFAULT_TYPE3:
+                setSelectedType(DEFAULT_TYPE3)
+                setActiveType(DEFAULT_TYPE3)
+                break;
 
-    const firstImage = () => {
-        setCurrentIndex(0);
-        setCrop(null);
-        setCroppedAreas([]);
-        setSelectedType("meter");
-        setActiveType("meter");
+            default:
+                break;
+        }
     }
-
-    const lastImage = () => {
-        setCurrentIndex(selectedImages.length - 1);
-        setCrop(null);
-        setCroppedAreas([]);
-        setSelectedType("meter");
-        setActiveType("meter");
-    }
-
 
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
@@ -78,16 +97,15 @@ const Main = ({ selectedImages }) => {
     const pushDataToStorage = () => {
         localStorage.setItem("state", JSON.stringify(state));
     }
-    pushDataToStorage();
 
     const getBorderColorByType = (type) => {
         switch (type) {
-            case "meter":
+            case DEFAULT_TYPE1:
                 return "red";
-            case "indication":
-                return "blue";
-            case "seal":
+            case DEFAULT_TYPE2:
                 return "green";
+            case DEFAULT_TYPE3:
+                return "blue";
             default:
                 return "";
         }
@@ -101,26 +119,30 @@ const Main = ({ selectedImages }) => {
 
     useEffect(() => {
         const handleKeyPress = (e) => {
-            if (e.code === "Digit1") {
-                setSelectedType("meter");
-                setCrop(null);
-                setActiveType("meter");
-            } else if (e.code === "Digit2") {
-                setSelectedType("seal");
-                setCrop(null);
-                setActiveType("seal");
-            } else if (e.code === "Digit3") {
-                setSelectedType("indication");
-                setCrop(null);
-                setActiveType("indication");
-            } else if (e.code === "KeyD" && currentIndex < selectedImages.length - 1) {
-                nextImage();
-            } else if (e.code === "KeyA" && currentIndex > 0) {
-                prevImage();
-            } else if (e.code === "KeyE" && currentIndex < selectedImages.length - 1) {
-                nextImage();
-            } else if (e.code === "KeyQ" && currentIndex > 0) {
-                prevImage();
+            switch (e.code) {
+                case "Digit1":
+                    swipeType(DEFAULT_TYPE1);
+                    break;
+                case "Digit2":
+                    swipeType(DEFAULT_TYPE2);
+                    break;
+                case "Digit3":
+                    swipeType(DEFAULT_TYPE3);
+                    break;
+                case "KeyQ":
+                    if (currentIndex > 0) swipeImage(STEP2);
+                    break;
+                case "KeyE":
+                    if (currentIndex < selectedImages.length - 1) swipeImage(STEP1);
+                    break;
+                case "KeyA":
+                    if (currentIndex > 0) swipeImage(STEP2);
+                    break;
+                case "KeyD":
+                    if (currentIndex < selectedImages.length - 1) swipeImage(STEP1);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -168,13 +190,13 @@ const Main = ({ selectedImages }) => {
         const savedState = localStorage.getItem("state");
         if (savedState) {
             const parsedState = JSON.parse(savedState);
-            setState(parsedState);1
+            setState(parsedState); 1
             checkPrev();
         }
     }, [currentIndex]);
 
     useEffect(() => {
-        localStorage.setItem("state", JSON.stringify(state));
+        pushDataToStorage();
     }, [state]);
 
     return (
@@ -215,49 +237,36 @@ const Main = ({ selectedImages }) => {
                                     ))}
                                     <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} />
                                 </ReactCrop>
-                                <div></div>
                             </div>
                         )}
                     </div>
                     <section className={classes.navigation}>
-                        <button onClick={firstImage}>
+                        <button onClick={() => swipeImage(STEP3)}>
                             <img src={two_arrow_left} alt="" />
                         </button>
-                        <button onClick={prevImage} disabled={currentIndex == 0}>
+                        <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
                             <img src={one_arrow_left} alt="" />
                         </button>
                         <p>{currentIndex + 1}/{selectedImages.length}</p>
-                        <button onClick={nextImage} disabled={currentIndex == (selectedImages.length - 1)}>
+                        <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (selectedImages.length - 1)}>
                             <img src={one_arrow_right} alt="" />
                         </button>
-                        <button onClick={lastImage}>
+                        <button onClick={() => swipeImage(STEP4)}>
                             <img src={two_arrow_right} alt="" />
                         </button>
                     </section>
                     <section className={classes.type}>
                         <button className={classes.type_btn_red}
-                            style={setButtonStyleBtn("meter")}
-                            onClick={() => {
-                                setSelectedType("meter");
-                                setCrop(null);
-                                setActiveType("meter");
-                            }}
+                            style={setButtonStyleBtn(DEFAULT_TYPE1)}
+                            onClick={() => swipeType(DEFAULT_TYPE1)}
                         >Счётчик</button>
                         <button className={classes.type_btn_green}
-                            style={setButtonStyleBtn("seal")}
-                            onClick={() => {
-                                setSelectedType("seal");
-                                setCrop(null);
-                                setActiveType("seal")
-                            }}
+                            style={setButtonStyleBtn(DEFAULT_TYPE2)}
+                            onClick={() => swipeType(DEFAULT_TYPE2)}
                         >Пломба</button>
                         <button className={classes.type_btn_blue}
-                            style={setButtonStyleBtn("indication")}
-                            onClick={() => {
-                                setSelectedType("indication")
-                                setCrop(null);
-                                setActiveType("indication")
-                            }}
+                            style={setButtonStyleBtn(DEFAULT_TYPE3)}
+                            onClick={() => swipeType(DEFAULT_TYPE3)}
                         >Показание</button>
                     </section>
                 </div>
