@@ -12,8 +12,8 @@ const Main = ({ selectedImages }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
-    const [selectedType, setSelectedType] = useState(null);
-    const [activeType, setActiveType] = useState(null);
+    const [selectedType, setSelectedType] = useState("meter");
+    const [activeType, setActiveType] = useState("meter");
     const [state, setState] = useState({
         rect: []
     })
@@ -22,32 +22,32 @@ const Main = ({ selectedImages }) => {
         setCurrentIndex(currentIndex - 1);
         setCrop(null);
         setCroppedAreas([]);
-        setSelectedType(null);
-        setActiveType(null);
+        setSelectedType("meter");
+        setActiveType("meter");
     }
 
     const nextImage = () => {
         setCurrentIndex(currentIndex + 1);
         setCrop(null);
         setCroppedAreas([]);
-        setSelectedType(null);
-        setActiveType(null);
+        setSelectedType("meter");
+        setActiveType("meter");
     }
 
     const firstImage = () => {
         setCurrentIndex(0);
         setCrop(null);
         setCroppedAreas([]);
-        setSelectedType(null);
-        setActiveType(null);
+        setSelectedType("meter");
+        setActiveType("meter");
     }
 
     const lastImage = () => {
         setCurrentIndex(selectedImages.length - 1);
         setCrop(null);
         setCroppedAreas([]);
-        setSelectedType(null);
-        setActiveType(null);
+        setSelectedType("meter");
+        setActiveType("meter");
     }
 
 
