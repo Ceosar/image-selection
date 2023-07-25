@@ -50,6 +50,7 @@ const Main = ({ selectedImages }) => {
         setActiveType(null);
     }
 
+
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
             const newCroppedArea = {
@@ -99,12 +100,12 @@ const Main = ({ selectedImages }) => {
     }
 
     useEffect(() => {
-        window.addEventListener('keypress', (e) => {
+        const handleKeyPress = (e) => {
             if (e.code === "Digit1") {
                 setSelectedType("meter");
                 setCrop(null);
                 setActiveType("meter");
-            } if (e.code === "Digit2") {
+            } else if (e.code === "Digit2") {
                 setSelectedType("seal");
                 setCrop(null);
                 setActiveType("seal");
@@ -112,9 +113,32 @@ const Main = ({ selectedImages }) => {
                 setSelectedType("indication");
                 setCrop(null);
                 setActiveType("indication");
+            } else if (e.code === "KeyD" && currentIndex < selectedImages.length - 1) {
+                nextImage();
+            } else if (e.code === "KeyA" && currentIndex > 0) {
+                prevImage();
+            } else if (e.code === "KeyE" && currentIndex < selectedImages.length - 1) {
+                nextImage();
+            } else if (e.code === "KeyQ" && currentIndex > 0) {
+                prevImage();
             }
-        })
-    }, []);
+        }
+
+        window.addEventListener('keypress', handleKeyPress);
+
+        return () => {
+            window.removeEventListener('keypress', handleKeyPress);
+        };
+    }, [currentIndex, selectedImages.length]);
+
+    // useEffect(() => {
+    //     const savedRect = localStorage.getItem("state");
+    //     if (savedRect) {
+    //         const parsedState = JSON.parse(savedRect);
+    //         setSelectedType(parsedState.selectedType);
+    //         setCroppedAreas(parsedState.croppedAreas);
+    //     }
+    // }, [])
 
     const noneType = () => {
         const newCroppedArea = {
