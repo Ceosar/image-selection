@@ -1,6 +1,11 @@
+import { useState } from "react";
 import classes from "./Header.module.css"
 
 const Header = ({ setSelectedImages }) => {
+    const [img, setImg] = useState({
+        images: []
+    });
+
     const uploadImage = (event) => {
         const files = event.target.files;
         const newImagesArray = [];
@@ -13,7 +18,16 @@ const Header = ({ setSelectedImages }) => {
             newImagesArray.push(imageObject);
         }
         setSelectedImages(newImagesArray);
+        setImg((prevImg) => ({
+            ...prevImg,
+            images: [...prevImg.images, ...newImagesArray]
+        }));
     }
+
+    const pushDataToStorage = () => {
+        localStorage.setItem("state2", JSON.stringify(img));
+    }
+    pushDataToStorage();
 
     return (
         <>
