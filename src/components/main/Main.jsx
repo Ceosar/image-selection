@@ -131,16 +131,9 @@ const Main = ({ selectedImages }) => {
         };
     }, [currentIndex, selectedImages.length]);
 
-    // useEffect(() => {
-    //     const savedRect = localStorage.getItem("state");
-    //     if (savedRect) {
-    //         const parsedState = JSON.parse(savedRect);
-    //         setSelectedType(parsedState.selectedType);
-    //         setCroppedAreas(parsedState.croppedAreas);
-    //     }
-    // }, [])
-
     const noneType = () => {
+        deleteRect();
+
         const newCroppedArea = {
             name: selectedImages[currentIndex].name,
             id: selectedImages[currentIndex].url,
@@ -163,6 +156,26 @@ const Main = ({ selectedImages }) => {
 
         localStorage.setItem("state", JSON.stringify({ ...state, rect: filteredRect }));
     };
+
+    const checkPrev = () => {
+        const filterRect = state.rect.filter(
+            (element) => selectedImages[currentIndex].name == element.name
+        )
+        setCroppedAreas(filterRect);
+    }
+
+    useEffect(() => {
+        const savedState = localStorage.getItem("state");
+        if (savedState) {
+            const parsedState = JSON.parse(savedState);
+            setState(parsedState);1
+            checkPrev();
+        }
+    }, [currentIndex]);
+
+    useEffect(() => {
+        localStorage.setItem("state", JSON.stringify(state));
+    }, [state]);
 
     return (
         <>
