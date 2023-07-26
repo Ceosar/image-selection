@@ -17,21 +17,42 @@ const Header = ({ setSelectedImages, setToken, token }) => {
                 "Content-Type": "application/json"
             },
             data: {
-                action: "dd_meter_readings",
+                action: "dd_pictures",
                 method: "Query",
-                "schema":"dbo",
-                data: [{
-                    "limit": 10,
-                }],
+                "schema": "dbo",
+                data: [{ "limit": 10, }],
                 type: "rpc"
             }
         })
             .then(response => {
-                console.log(response.data);
+                console.log(response.data[0]);
             })
             .catch(error => {
                 console.log(error)
             })
+
+        axios({
+            method: 'post',
+            url: `${URL}/rpc`,
+            headers: {
+                "rpc-authorization": `Token ${token}`,
+                "Content-Type": "application/json"
+            },
+            data: {
+                action: "dd_meter_readings",
+                method: "Query",
+                "schema": "dbo",
+                data: [{ "limit": 10, }],
+                type: "rpc"
+            }
+        })
+            .then(response => {
+                console.log(response.data[0]);
+            })
+            .catch(error => {
+                console.log(error)
+            })
+
     }
     handleLoad();
 
