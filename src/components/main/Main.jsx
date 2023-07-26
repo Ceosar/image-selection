@@ -203,16 +203,36 @@ const Main = ({ selectedImages }) => {
         <>
             <div className={classes.wrapper}>
                 <div className={classes.container}>
+                    <section className={classes.type}>
+                        <button className={classes.type_btn_red}
+                            style={setButtonStyleBtn(DEFAULT_TYPE1)}
+                            onClick={() => swipeType(DEFAULT_TYPE1)}
+                        >Счётчик</button>
+                        <button className={classes.type_btn_green}
+                            style={setButtonStyleBtn(DEFAULT_TYPE2)}
+                            onClick={() => swipeType(DEFAULT_TYPE2)}
+                        >Пломба</button>
+                        <button className={classes.type_btn_blue}
+                            style={setButtonStyleBtn(DEFAULT_TYPE3)}
+                            onClick={() => swipeType(DEFAULT_TYPE3)}
+                        >Показание</button>
+                    </section>
+                    <section className={classes.navigation}>
+                        <button onClick={() => swipeImage(STEP3)} disabled={currentIndex == 0}>
+                            <img src={two_arrow_left} alt="" />
+                        </button>
+                        <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
+                            <img src={one_arrow_left} alt="" />
+                        </button>
+                        <p>{currentIndex + 1}/{selectedImages.length}</p>
+                        <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (selectedImages.length - 1)}>
+                            <img src={one_arrow_right} alt="" />
+                        </button>
+                        <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (selectedImages.length - 1)}>
+                            <img src={two_arrow_right} alt="" />
+                        </button>
+                    </section>
                     <div className={classes.content_container}>
-                        <section className={classes.properties}>
-                            <button className={classes.prop_red}
-                                onClick={noneType}
-                            >Нет элементов</button>
-                            <button className={classes.prop_yellow}
-                                onClick={deleteRect}
-                            >Сброс</button>
-                            <button className={classes.prop_green}>Готово</button>
-                        </section>
                         {selectedImages.length > 0 && (
                             <div className={classes.image_content}>
                                 <ReactCrop
@@ -239,36 +259,16 @@ const Main = ({ selectedImages }) => {
                                 </ReactCrop>
                             </div>
                         )}
+                        <section className={classes.properties}>
+                            <button className={classes.prop_red}
+                                onClick={noneType}
+                            >Нет элементов</button>
+                            <button className={classes.prop_yellow}
+                                onClick={deleteRect}
+                            >Сброс</button>
+                            <button className={classes.prop_green}>Готово</button>
+                        </section>
                     </div>
-                    <section className={classes.navigation}>
-                        <button onClick={() => swipeImage(STEP3)} disabled={currentIndex == 0}>
-                            <img src={two_arrow_left} alt="" />
-                        </button>
-                        <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
-                            <img src={one_arrow_left} alt="" />
-                        </button>
-                        <p>{currentIndex + 1}/{selectedImages.length}</p>
-                        <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (selectedImages.length - 1)}>
-                            <img src={one_arrow_right} alt="" />
-                        </button>
-                        <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (selectedImages.length - 1)}>
-                            <img src={two_arrow_right} alt="" />
-                        </button>
-                    </section>
-                    <section className={classes.type}>
-                        <button className={classes.type_btn_red}
-                            style={setButtonStyleBtn(DEFAULT_TYPE1)}
-                            onClick={() => swipeType(DEFAULT_TYPE1)}
-                        >Счётчик</button>
-                        <button className={classes.type_btn_green}
-                            style={setButtonStyleBtn(DEFAULT_TYPE2)}
-                            onClick={() => swipeType(DEFAULT_TYPE2)}
-                        >Пломба</button>
-                        <button className={classes.type_btn_blue}
-                            style={setButtonStyleBtn(DEFAULT_TYPE3)}
-                            onClick={() => swipeType(DEFAULT_TYPE3)}
-                        >Показание</button>
-                    </section>
                 </div>
             </div>
         </>
