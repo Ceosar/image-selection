@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import classes from "./Main.module.css"
 import ReactCrop from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
@@ -8,7 +9,7 @@ import one_arrow_right from "../../assets/one_arrow_right.png"
 import two_arrow_left from "../../assets/two_arrow_left.png"
 import two_arrow_right from "../../assets/two_arrow_right.png"
 
-const Main = ({ selectedImages }) => {
+const Main = ({ selectedImages, token }) => {
     const DEFAULT_TYPE1 = "meter";
     const DEFAULT_TYPE2 = "seal";
     const DEFAULT_TYPE3 = "indication";
@@ -26,6 +27,8 @@ const Main = ({ selectedImages }) => {
     const [state, setState] = useState({
         rect: []
     })
+
+
 
     const swipeImage = (arg) => {
         switch (arg) {

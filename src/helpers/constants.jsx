@@ -1,0 +1,1 @@
+export const URL = "http://cic.it-serv.ru/machine-learning/release"

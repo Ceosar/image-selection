@@ -1,0 +1,44 @@
+.login_form {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    font-size: 21px;
+}
+
+.login_content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+.login_content h2 {
+    font-size: 27px;
+    font-weight: 900;
+}
+
+.login_content input{
+    padding: 10px;
+    box-shadow: inset 0px 0px 5px 1px grey;
+    border-radius: 15px;
+}
+
+.login_input_login {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login_input_pas {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.enter_btn {
+    padding: 10px 20px;
+    background-color: rgb(255, 177, 1);
+    border-radius: 15px;
+}
