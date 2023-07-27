@@ -31,3 +31,33 @@
 .header_btns input[type="file"] {
     display: none;
 }
+
+.input_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.input_photos{
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+    padding: 10px;
+    box-shadow: inset 0px 0px 5px 1px grey;
+    border-radius: 15px;
+    background-color: aliceblue;
+}
+
+.input_photos input{
+    width: 50px;
+}
+
+.input_photos button{
+    background-color: green;
+    color: white;
+    width: 20px;
+    height: 20px;
+    font-weight: 900;
+    border-radius: 50%;
+}

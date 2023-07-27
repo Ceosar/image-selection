@@ -3,11 +3,11 @@ import classes from "./Header.module.css"
 import axios from "axios";
 import { URL } from "../../helpers/constants";
 
-const Header = ({ currentIndex, setSelectedImages, setToken, token, setFn_file }) => {
+const Header = ({ pictures, setPictures, currentIndex, setSelectedImages, setToken, token }) => {
+    const [count, setCount] = useState(10);
     const [img, setImg] = useState({
         images: []
     });
-    const [pictures, setPictures] = useState([]);
 
     // const [fn_file, setFn_file] = useState("");
 
@@ -23,11 +23,11 @@ const Header = ({ currentIndex, setSelectedImages, setToken, token, setFn_file }
                 action: "dd_pictures",
                 method: "Query",
                 "schema": "dbo",
-                data: [{ "limit": 10, sort: [{property: "fn_result", direction: 'ASC'}]}],
+                data: [{ "limit": count, sort: [{ property: "fn_result", direction: 'ASC' }] }],
                 type: "rpc"
             }
         })
-        
+
         console.log("fn_file " + response.data[0].result.records[0].fn_file);
         console.log("fn_result " + response.data[0].result.records[0].fn_result);
         console.log(response.data[0].result.records)
@@ -79,15 +79,20 @@ const Header = ({ currentIndex, setSelectedImages, setToken, token, setFn_file }
         const _pictures = await getPictures();
         setPictures(_pictures);
     }
-    
+
+    const handlerLoader = () => {
+        setCount(document.getElementById("countPhotos").value);
+        console.log(count)
+        handlerUpload();
+    }
+
     useEffect(() => {
         handlerUpload();
-    }, []);
-    
+    }, [])
+
     useEffect(() => {
-        if(pictures.length>0){
+        if (pictures.length > 0) {
             getMeterReadings(pictures[currentIndex].fn_result)
-            setFn_file(pictures[currentIndex].fn_file)
             console.log(pictures)
         }
     }, [pictures, currentIndex])
@@ -97,17 +102,18 @@ const Header = ({ currentIndex, setSelectedImages, setToken, token, setFn_file }
         setToken("");
     }
 
-    const uploadImage = (imageUrls) => {
-        const newImagesArray = imageUrls.map((imageUrl) => ({
-            url: imageUrl,
-            name: imageUrl.split("/").pop,
-        }));
-        setSelectedImages(newImagesArray);
-        setImg((prevImg) => ({
-            ...prevImg,
-            images: [...prevImg.images, ...newImagesArray],
-        }));
-    }
+
+    // const uploadImage = (imageUrls) => {
+    //     const newImagesArray = imageUrls.map((imageUrl) => ({
+    //         url: imageUrl,
+    //         name: imageUrl.split("/").pop,
+    //     }));
+    //     setSelectedImages(newImagesArray);
+    //     setImg((prevImg) => ({
+    //         ...prevImg,
+    //         images: [...prevImg.images, ...newImagesArray],
+    //     }));
+    // }
 
 
 
@@ -130,13 +136,14 @@ const Header = ({ currentIndex, setSelectedImages, setToken, token, setFn_file }
     //     }));
     // }
 
-    const pushDataToStorage = () => {
-        localStorage.setItem("state2", JSON.stringify(img));
-    }
-
-    useEffect(() => {
-        pushDataToStorage();
-    }, [img])
+    // useEffect(() => {
+    //     const pushDataToStorage = () => {
+    //         if (pictures.length > 0) {
+    //             localStorage.setItem("state2", JSON.stringify(img));
+    //         }
+    //     }
+    //     pushDataToStorage();
+    // }, [img])
 
     return (
         <>
@@ -146,6 +153,13 @@ const Header = ({ currentIndex, setSelectedImages, setToken, token, setFn_file }
                         Открыть
                         <input type="file" multiple onChange={uploadImage} />
                     </label> */}
+                    <label className={classes.input_container}>
+                        Введите количество фотографий:
+                        <div className={classes.input_photos}>
+                            <input id="countPhotos" />
+                            <button onClick={handlerLoader}>+</button>
+                        </div>
+                    </label>
                     <label className={classes.header_btns}
                         onClick={handleExit}
                     >

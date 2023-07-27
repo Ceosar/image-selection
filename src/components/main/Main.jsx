@@ -8,8 +8,9 @@ import one_arrow_left from "../../assets/one_arrow_left.png"
 import one_arrow_right from "../../assets/one_arrow_right.png"
 import two_arrow_left from "../../assets/two_arrow_left.png"
 import two_arrow_right from "../../assets/two_arrow_right.png"
+import { URL_IMAGE } from "../../helpers/constants";
 
-const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
+const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
     const DEFAULT_TYPE1 = "meter";
     const DEFAULT_TYPE2 = "seal";
     const DEFAULT_TYPE3 = "indication";
@@ -26,8 +27,10 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
     const [state, setState] = useState({
         rect: []
     })
-
-
+    const [imageID, setImageId] = useState('');
+    const [img, setImg] = useState({
+        images: []
+    })
 
     const swipeImage = (arg) => {
         switch (arg) {
@@ -41,7 +44,7 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
                 setCurrentIndex(0);
                 break;
             case STEP4:
-                setCurrentIndex(selectedImages.length - 1);
+                setCurrentIndex(pictures.length - 1);
             default:
                 break;
         }
@@ -50,6 +53,14 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
         setSelectedType(DEFAULT_TYPE1);
         setActiveType(DEFAULT_TYPE1);
     }
+
+    useEffect(() => {
+        if (pictures.length > 0) {
+            console.log(pictures[currentIndex].fn_file)
+            setImageId(pictures[currentIndex].fn_file);
+            setImages(pictures[currentIndex].fn_file)
+        }
+    }, [pictures, currentIndex]);
 
     const swipeType = (type) => {
         setCrop(null);
@@ -75,8 +86,8 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
             const newCroppedArea = {
-                name: selectedImages[currentIndex].name,
-                id: selectedImages[currentIndex].url,
+                name: pictures[currentIndex].fn_file,
+                id: imageID,
                 x: crop.x,
                 y: crop.y,
                 width: crop.width,
@@ -95,6 +106,18 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
             rect: [...prevState.rect, newCroppedArea]
         }));
     };
+
+    const setImages = (newImagesArea) => {
+        console.log(newImagesArea)
+        setImg((prevImg) => ({
+            ...prevImg,
+            images: [prevImg.images, newImagesArea],
+        }));
+    }
+
+    const pushImagesToStorage = () => {
+        localStorage.setItem("state2", JSON.stringify(img));
+    }
 
     const pushDataToStorage = () => {
         localStorage.setItem("state", JSON.stringify(state));
@@ -122,26 +145,26 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
     useEffect(() => {
         const handleKeyPress = (e) => {
             switch (e.code) {
-                case "Digit1":
+                // case "Digit1":
+                //     break;
+                // case "Digit2":
+                //     break;
+                // case "Digit3":
+                //     break;
+                case "KeyQ":
                     swipeType(DEFAULT_TYPE1);
                     break;
-                case "Digit2":
+                case "KeyW":
                     swipeType(DEFAULT_TYPE2);
                     break;
-                case "Digit3":
-                    swipeType(DEFAULT_TYPE3);
-                    break;
-                case "KeyQ":
-                    if (currentIndex > 0) swipeImage(STEP2);
-                    break;
                 case "KeyE":
-                    if (currentIndex < selectedImages.length - 1) swipeImage(STEP1);
+                    swipeType(DEFAULT_TYPE3);
                     break;
                 case "KeyA":
                     if (currentIndex > 0) swipeImage(STEP2);
                     break;
                 case "KeyD":
-                    if (currentIndex < selectedImages.length - 1) swipeImage(STEP1);
+                    if (currentIndex < pictures.length - 1) swipeImage(STEP1);
                     break;
                 default:
                     break;
@@ -153,14 +176,14 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
         return () => {
             window.removeEventListener('keypress', handleKeyPress);
         };
-    }, [currentIndex, selectedImages.length]);
+    }, [currentIndex, pictures.length]);
 
     const noneType = () => {
         deleteRect();
 
         const newCroppedArea = {
-            name: selectedImages[currentIndex].name,
-            id: selectedImages[currentIndex].url,
+            name: pictures[currentIndex].fn_file,
+            id: pictures[currentIndex].fn_file,
             type: "none"
         };
 
@@ -170,7 +193,7 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
     const deleteRect = () => {
         setCroppedAreas([])
         const filteredRect = state.rect.filter(
-            (element) => element.name !== selectedImages[currentIndex].name
+            (element) => element.name !== pictures[currentIndex].fn_file
         );
 
         setState((prevState) => ({
@@ -183,7 +206,7 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
 
     const checkPrev = () => {
         const filterRect = state.rect.filter(
-            (element) => selectedImages[currentIndex].name == element.name
+            (element) => pictures[currentIndex].fn_file == element.name
         )
         setCroppedAreas(filterRect);
     }
@@ -195,13 +218,13 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
             setState(parsedState);
             checkPrev();
         }
+        pushImagesToStorage();
     }, [currentIndex]);
 
     useEffect(() => {
         pushDataToStorage();
     }, [state]);
 
-    console.log('fnfile: ' + fn_file)
 
     return (
         <>
@@ -228,16 +251,16 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
                         <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
                             <img src={one_arrow_left} alt="" />
                         </button>
-                        <p>{currentIndex + 1}/{selectedImages.length}</p>
-                        <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (selectedImages.length - 1)}>
+                        <p>{currentIndex + 1}/{pictures.length}</p>
+                        <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (pictures.length - 1)}>
                             <img src={one_arrow_right} alt="" />
                         </button>
-                        <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (selectedImages.length - 1)}>
+                        <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (pictures.length - 1)}>
                             <img src={two_arrow_right} alt="" />
                         </button>
                     </section>
                     <div className={classes.content_container}>
-                        {selectedImages.length > 0 && (
+                        {pictures.length > 0 && (
                             <div className={classes.image_content}>
                                 <ReactCrop
                                     crop={crop}
@@ -251,7 +274,7 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
                                             key={index}
                                             style={{
                                                 position: "absolute",
-                                                border: `2px solid ${getBorderColorByType(area.type)}`,
+                                                border: `4px solid ${getBorderColorByType(area.type)}`,
                                                 left: area.x,
                                                 top: area.y,
                                                 width: area.width,
@@ -259,11 +282,13 @@ const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
                                             }}
                                         />
                                     ))}
-                                {/* <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} /> */}
+                                    {/* <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} /> */}
+                                    <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" />
                                 </ReactCrop>
                             </div>
                         )}
-                        <img className={classes.image} src={`https://msk-mc-app.mrsk-1.ru/release/file?id=${fn_file}`} alt="" />
+                        {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
+                        {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
                         <section className={classes.properties}>
                             <button className={classes.prop_red}
                                 onClick={noneType}
