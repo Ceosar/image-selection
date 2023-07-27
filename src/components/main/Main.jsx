@@ -9,7 +9,7 @@ import one_arrow_right from "../../assets/one_arrow_right.png"
 import two_arrow_left from "../../assets/two_arrow_left.png"
 import two_arrow_right from "../../assets/two_arrow_right.png"
 
-const Main = ({ selectedImages, token }) => {
+const Main = ({ currentIndex, setCurrentIndex, selectedImages, fn_file }) => {
     const DEFAULT_TYPE1 = "meter";
     const DEFAULT_TYPE2 = "seal";
     const DEFAULT_TYPE3 = "indication";
@@ -19,7 +19,6 @@ const Main = ({ selectedImages, token }) => {
     const STEP3 = "first";
     const STEP4 = "last";
 
-    const [currentIndex, setCurrentIndex] = useState(0);
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
     const [selectedType, setSelectedType] = useState(DEFAULT_TYPE1);
@@ -202,6 +201,8 @@ const Main = ({ selectedImages, token }) => {
         pushDataToStorage();
     }, [state]);
 
+    console.log('fnfile: ' + fn_file)
+
     return (
         <>
             <div className={classes.wrapper}>
@@ -258,10 +259,11 @@ const Main = ({ selectedImages, token }) => {
                                             }}
                                         />
                                     ))}
-                                    <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} />
+                                {/* <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} /> */}
                                 </ReactCrop>
                             </div>
                         )}
+                        <img className={classes.image} src={`https://msk-mc-app.mrsk-1.ru/release/file?id=${fn_file}`} alt="" />
                         <section className={classes.properties}>
                             <button className={classes.prop_red}
                                 onClick={noneType}
@@ -271,6 +273,7 @@ const Main = ({ selectedImages, token }) => {
                             >Сброс</button>
                             <button className={classes.prop_green}>Готово</button>
                         </section>
+                        {/* <img className={classes.image} src={`https://msk-mc-app.mrsk-1.ru/release/file?id=${fn_file}`} alt="" /> */}
                     </div>
                 </div>
             </div>

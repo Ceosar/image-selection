@@ -8,6 +8,8 @@ import Auth from './components/auth/Auth'
 function App() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [token, setToken] = useState(localStorage.getItem("Token") || "");
+  const [fn_file, setFn_file] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     localStorage.setItem('Token', token);
@@ -18,11 +20,11 @@ function App() {
       <>
         <div className="wrapper">
           <header className="header">
-            <Header setSelectedImages={setSelectedImages} setToken={setToken} token={token} />
+            <Header currentIndex={currentIndex} setSelectedImages={setSelectedImages} setToken={setToken} token={token} fn_file={fn_file} setFn_file={setFn_file} />
           </header>
           <main className="main">
-            {selectedImages.length == 0 ? null : <Main selectedImages={selectedImages} />}
-            {/* <Main selectedImages={selectedImages} /> */}
+            {/* {selectedImages.length == 0 ? null : <Main selectedImages={selectedImages} fn_file={fn_file} />} */}
+            <Main currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} selectedImages={selectedImages} fn_file={fn_file} />
           </main>
           <footer className="footer">
             {/* <Footer /> */}
