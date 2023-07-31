@@ -3,12 +3,11 @@ import classes from "./Header.module.css"
 import axios from "axios";
 import { URL } from "../../helpers/constants";
 
-const Header = ({ pictures, setPictures, currentIndex, setSelectedImages, setToken, token }) => {
+const Header = ({ setMeterData, pictures, setPictures, currentIndex, setSelectedImages, setToken, token }) => {
     const [count, setCount] = useState(10);
     const [img, setImg] = useState({
         images: []
     });
-
     // const [fn_file, setFn_file] = useState("");
 
     async function getPictures() {
@@ -28,9 +27,6 @@ const Header = ({ pictures, setPictures, currentIndex, setSelectedImages, setTok
             }
         })
 
-        console.log("fn_file " + response.data[0].result.records[0].fn_file);
-        console.log("fn_result " + response.data[0].result.records[0].fn_result);
-        console.log(response.data[0].result.records)
         return response.data[0].result.records;
     }
 
@@ -63,14 +59,13 @@ const Header = ({ pictures, setPictures, currentIndex, setSelectedImages, setTok
 
             for (const record of records) {
                 if (record.fn_result = fn_result) {
-                    console.log(record);
+                    setMeterData(record.n_value);
                     foundPic = true;
                     break;
                 }
             }
 
             pageNum++;
-            console.log(response2.data[0].result)
             return response2;
         }
     }
@@ -82,7 +77,6 @@ const Header = ({ pictures, setPictures, currentIndex, setSelectedImages, setTok
 
     const handlerLoader = () => {
         setCount(document.getElementById("countPhotos").value);
-        console.log(count)
         handlerUpload();
     }
 
@@ -93,7 +87,7 @@ const Header = ({ pictures, setPictures, currentIndex, setSelectedImages, setTok
     useEffect(() => {
         if (pictures.length > 0) {
             getMeterReadings(pictures[currentIndex].fn_result)
-            console.log(pictures)
+            setMeterData('')
         }
     }, [pictures, currentIndex])
 
@@ -101,7 +95,6 @@ const Header = ({ pictures, setPictures, currentIndex, setSelectedImages, setTok
         localStorage.removeItem('Token');
         setToken("");
     }
-
 
     // const uploadImage = (imageUrls) => {
     //     const newImagesArray = imageUrls.map((imageUrl) => ({

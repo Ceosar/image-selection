@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import classes from "./Main.module.css"
 import ReactCrop from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
@@ -9,8 +8,9 @@ import one_arrow_right from "../../assets/one_arrow_right.png"
 import two_arrow_left from "../../assets/two_arrow_left.png"
 import two_arrow_right from "../../assets/two_arrow_right.png"
 import { URL_IMAGE } from "../../helpers/constants";
+import MeterDataForm from "./meterDataForm/meterDataForm";
 
-const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
+const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImages }) => {
     const DEFAULT_TYPE1 = "meter";
     const DEFAULT_TYPE2 = "seal";
     const DEFAULT_TYPE3 = "indication";
@@ -31,6 +31,8 @@ const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
     const [img, setImg] = useState({
         images: []
     })
+    const [meterDataInput, setMeterDataInput] = useState("");
+
 
     const swipeImage = (arg) => {
         switch (arg) {
@@ -38,7 +40,7 @@ const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
                 setCurrentIndex(currentIndex + 1);
                 break;
             case STEP2:
-                setCurrentIndex(currentIndex - 1)
+                setCurrentIndex(currentIndex - 1);
                 break;
             case STEP3:
                 setCurrentIndex(0);
@@ -52,13 +54,13 @@ const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
         setCroppedAreas([]);
         setSelectedType(DEFAULT_TYPE1);
         setActiveType(DEFAULT_TYPE1);
+        showMeterData(0);
     }
 
     useEffect(() => {
         if (pictures.length > 0) {
-            console.log(pictures[currentIndex].fn_file)
             setImageId(pictures[currentIndex].fn_file);
-            setImages(pictures[currentIndex].fn_file)
+            setImages(pictures[currentIndex].fn_file);
         }
     }, [pictures, currentIndex]);
 
@@ -66,16 +68,19 @@ const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
         setCrop(null);
         switch (type) {
             case DEFAULT_TYPE1:
-                setSelectedType(DEFAULT_TYPE1)
-                setActiveType(DEFAULT_TYPE1)
+                setSelectedType(DEFAULT_TYPE1);
+                setActiveType(DEFAULT_TYPE1);
+                showMeterData(0);
                 break;
             case DEFAULT_TYPE2:
-                setSelectedType(DEFAULT_TYPE2)
-                setActiveType(DEFAULT_TYPE2)
+                setSelectedType(DEFAULT_TYPE2);
+                setActiveType(DEFAULT_TYPE2);
+                showMeterData(0);
                 break;
             case DEFAULT_TYPE3:
-                setSelectedType(DEFAULT_TYPE3)
-                setActiveType(DEFAULT_TYPE3)
+                setSelectedType(DEFAULT_TYPE3);
+                setActiveType(DEFAULT_TYPE3);
+                showMeterData(1);
                 break;
 
             default:
@@ -94,6 +99,10 @@ const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
                 height: crop.height,
                 type: selectedType
             };
+            if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
+                newCroppedArea.meterData = meterDataInput;
+            }
+
             setCroppedAreas([...croppedAreas, newCroppedArea]);
             setCrop(null);
             setRect(newCroppedArea);
@@ -108,10 +117,10 @@ const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
     };
 
     const setImages = (newImagesArea) => {
-        console.log(newImagesArea)
+        //добавить проверку на idв
         setImg((prevImg) => ({
             ...prevImg,
-            images: [prevImg.images, newImagesArea],
+            images: [...prevImg.images, newImagesArea],
         }));
     }
 
@@ -225,81 +234,96 @@ const Main = ({ pictures, currentIndex, setCurrentIndex, selectedImages }) => {
         pushDataToStorage();
     }, [state]);
 
+    useEffect(() => {
+    }, [meterData])
+
+    const showMeterData = (toggle) => {
+        if (toggle) {
+            document.getElementById("meter-state").style.opacity = "1";
+        } else {
+            document.getElementById("meter-state").style.opacity = "0";
+        }
+    }
 
     return (
         <>
-            <div className={classes.wrapper}>
-                <div className={classes.container}>
-                    <section className={classes.type}>
-                        <button className={classes.type_btn_red}
-                            style={setButtonStyleBtn(DEFAULT_TYPE1)}
-                            onClick={() => swipeType(DEFAULT_TYPE1)}
-                        >Счётчик</button>
-                        <button className={classes.type_btn_green}
-                            style={setButtonStyleBtn(DEFAULT_TYPE2)}
-                            onClick={() => swipeType(DEFAULT_TYPE2)}
-                        >Пломба</button>
-                        <button className={classes.type_btn_blue}
-                            style={setButtonStyleBtn(DEFAULT_TYPE3)}
-                            onClick={() => swipeType(DEFAULT_TYPE3)}
-                        >Показание</button>
-                    </section>
-                    <section className={classes.navigation}>
-                        <button onClick={() => swipeImage(STEP3)} disabled={currentIndex == 0}>
-                            <img src={two_arrow_left} alt="" />
-                        </button>
-                        <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
-                            <img src={one_arrow_left} alt="" />
-                        </button>
-                        <p>{currentIndex + 1}/{pictures.length}</p>
-                        <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (pictures.length - 1)}>
-                            <img src={one_arrow_right} alt="" />
-                        </button>
-                        <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (pictures.length - 1)}>
-                            <img src={two_arrow_right} alt="" />
-                        </button>
-                    </section>
-                    <div className={classes.content_container}>
-                        {pictures.length > 0 && (
-                            <div className={classes.image_content}>
-                                <ReactCrop
-                                    crop={crop}
-                                    onChange={c => setCrop(c)}
-                                    onComplete={onCompleteCrop}
-                                    disabled={!selectedType}
-                                >
-                                    {croppedAreas.map((area, index) => (
-                                        <div
-                                            className={classes.image}
-                                            key={index}
-                                            style={{
-                                                position: "absolute",
-                                                border: `4px solid ${getBorderColorByType(area.type)}`,
-                                                left: area.x,
-                                                top: area.y,
-                                                width: area.width,
-                                                height: area.height
-                                            }}
-                                        />
-                                    ))}
-                                    {/* <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} /> */}
-                                    <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" />
-                                </ReactCrop>
-                            </div>
-                        )}
-                        {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
-                        {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
-                        <section className={classes.properties}>
-                            <button className={classes.prop_red}
-                                onClick={noneType}
-                            >Нет элементов</button>
-                            <button className={classes.prop_yellow}
-                                onClick={deleteRect}
-                            >Сброс</button>
-                            <button className={classes.prop_green}>Готово</button>
+            <div className={classes.main_wrapper}>
+            <section className={classes.type}>
+                            <button className={classes.type_btn_red}
+                                style={setButtonStyleBtn(DEFAULT_TYPE1)}
+                                onClick={() => swipeType(DEFAULT_TYPE1)}
+                            >Счётчик</button>
+                            <button className={classes.type_btn_green}
+                                style={setButtonStyleBtn(DEFAULT_TYPE2)}
+                                onClick={() => swipeType(DEFAULT_TYPE2)}
+                            >Пломба</button>
+                            <button className={classes.type_btn_blue}
+                                style={setButtonStyleBtn(DEFAULT_TYPE3)}
+                                onClick={() => swipeType(DEFAULT_TYPE3)}
+                            >Показание</button>
                         </section>
-                        {/* <img className={classes.image} src={`https://msk-mc-app.mrsk-1.ru/release/file?id=${fn_file}`} alt="" /> */}
+                        <section className={classes.navigation}>
+                            <button onClick={() => swipeImage(STEP3)} disabled={currentIndex == 0}>
+                                <img src={two_arrow_left} alt="" />
+                            </button>
+                            <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
+                                <img src={one_arrow_left} alt="" />
+                            </button>
+                            <p>{currentIndex + 1}/{pictures.length}</p>
+                            <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (pictures.length - 1)}>
+                                <img src={one_arrow_right} alt="" />
+                            </button>
+                            <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (pictures.length - 1)}>
+                                <img src={two_arrow_right} alt="" />
+                            </button>
+                        </section>
+                <div className={classes.wrapper}>
+                    <section className={classes.properties}>
+                        <button className={classes.prop_red}
+                            onClick={noneType}
+                        >Нет элементов</button>
+                        <button className={classes.prop_yellow}
+                            onClick={deleteRect}
+                        >Сброс</button>
+                        <button className={classes.prop_green}>Готово</button>
+                    </section>
+                    <div className={classes.container}>
+                        <div className={classes.content_container}>
+                            {pictures.length > 0 && (
+                                <div className={classes.image_content}>
+                                    <ReactCrop
+                                        crop={crop}
+                                        onChange={c => setCrop(c)}
+                                        onComplete={onCompleteCrop}
+                                        disabled={!selectedType}
+                                    >
+                                        <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" />
+                                        {croppedAreas.map((area, index) => (
+                                            <div
+                                                className={classes.image}
+                                                key={index}
+                                                style={{
+                                                    position: "absolute",
+                                                    border: `4px solid ${getBorderColorByType(area.type)}`,
+                                                    left: area.x,
+                                                    top: area.y,
+                                                    width: area.width,
+                                                    height: area.height
+                                                }}
+                                            />
+                                        ))}
+                                        {/* <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} /> */}
+                                    </ReactCrop>
+                                </div>
+                            )}
+                            {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
+                            {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
+                            {/* <img className={classes.image} src={`https://msk-mc-app.mrsk-1.ru/release/file?id=${fn_file}`} alt="" /> */}
+                        </div>
                     </div>
+                    <section className={classes.meter_data} id="meter-state">
+                        <MeterDataForm pictures={pictures} currentIndex={currentIndex} meterData={meterData} setMeterDataInput={setMeterDataInput} />
+                    </section>
                 </div>
             </div>
         </>

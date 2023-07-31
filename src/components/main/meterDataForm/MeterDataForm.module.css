@@ -1,0 +1,13 @@
+.input_meter_data {
+    /* opacity: 0; */
+    border: 2px solid rgb(39, 39, 41);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.input_meter_data button{
+    background-color: rgb(120, 120, 236);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}

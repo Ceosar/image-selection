@@ -11,6 +11,7 @@ function App() {
   // const [fn_file, setFn_file] = useState("");
   const [pictures, setPictures] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [meterData, setMeterData] = useState([]);
 
   useEffect(() => {
     localStorage.setItem('Token', token);
@@ -21,11 +22,11 @@ function App() {
       <>
         <div className="wrapper">
           <header className="header">
-            <Header pictures={pictures} setPictures={setPictures} currentIndex={currentIndex} setSelectedImages={setSelectedImages} setToken={setToken} token={token} />
+            <Header setMeterData={setMeterData} pictures={pictures} setPictures={setPictures} currentIndex={currentIndex} setSelectedImages={setSelectedImages} setToken={setToken} token={token} />
           </header>
           <main className="main">
             {/* {selectedImages.length == 0 ? null : <Main selectedImages={selectedImages} fn_file={fn_file} />} */}
-            <Main pictures={pictures} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} selectedImages={selectedImages} />
+            <Main meterData={meterData} pictures={pictures} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} selectedImages={selectedImages} />
           </main>
           <footer className="footer">
             {/* <Footer /> */}
