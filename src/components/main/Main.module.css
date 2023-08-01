@@ -36,6 +36,7 @@
 .image {
     /* max-height: 800px; */
     /* height: 700px; */
+    object-fit: cover;
 }
 
 .navigation {
