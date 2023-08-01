@@ -241,9 +241,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
     }, [meterData])
 
     const showMeterData = (toggle) => {
+        // const input = document.getElementById("input_meter_data");
         if (toggle) {
             document.getElementById("meter-state").style.opacity = "1";
+            // input.focus();
         } else {
+            // window.focus();
             document.getElementById("meter-state").style.opacity = "0";
         }
     }
@@ -324,8 +327,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                             {/* <img className={classes.image} src={`https://msk-mc-app.mrsk-1.ru/release/file?id=${fn_file}`} alt="" /> */}
                         </div>
                     </div>
-                    <section className={classes.meter_data} id="meter-state">
-                        <MeterDataForm pictures={pictures} currentIndex={currentIndex} meterData={meterData} setMeterDataInput={setMeterDataInput} />
+                    <section hidden className={classes.meter_data} id="meter-state">
+                        <MeterDataForm state={state} setState={setState} pictures={pictures} currentIndex={currentIndex} meterData={Math.round(meterData)} meterDataInput={meterDataInput} setMeterDataInput={setMeterDataInput} />
                     </section>
                 </div>
             </div>

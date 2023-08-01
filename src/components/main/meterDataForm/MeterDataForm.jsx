@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import classes from './MeterDataForm.module.css'
 
 
-const MeterDataForm = ({meterData, setMeterDataInput}) => {
+const MeterDataForm = ({state, setState, meterData, meterDataInput,setMeterDataInput}) => {
 useEffect(() => {
     document.getElementById("input_meter_data").value = meterData;
     setMeterDataInput(document.getElementById("input_meter_data").value);
@@ -13,20 +13,9 @@ useEffect(() => {
     }
 
     const sendMeterData = () => {
-
-        // if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
-        //     const updatedCroppedAreas = croppedAreas.map((area) => {
-        //         if (area.type === DEFAULT_TYPE3) {
-        //             return {
-        //                 ...area,
-        //                 meterData: meterDataInput,
-        //             };
-        //         }
-        //         return area;
-        //     });
-        //     setCroppedAreas(updatedCroppedAreas);
-        //     setMeterDataInput("");
-        // }
+        const updatedState = {...state};
+        updatedState.rect[updatedState.rect.length - 1].meterData = meterDataInput;
+        setState(updatedState);
     }
     return (
         <>
