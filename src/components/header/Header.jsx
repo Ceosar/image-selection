@@ -26,7 +26,6 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setSelected
                 type: "rpc"
             }
         })
-
         return response.data[0].result.records;
     }
 
@@ -86,8 +85,8 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setSelected
 
     useEffect(() => {
         if (pictures.length > 0) {
-            getMeterReadings(pictures[currentIndex].fn_result)
-            setMeterData('')
+            getMeterReadings(pictures[currentIndex].fn_result);
+            setMeterData('');
         }
     }, [pictures, currentIndex])
 

@@ -32,7 +32,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
         images: []
     })
     const [meterDataInput, setMeterDataInput] = useState("");
-
+    const [scale, setScale] = useState(0.7);
 
     const swipeImage = (arg) => {
         switch (arg) {
@@ -59,6 +59,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
 
     useEffect(() => {
         if (pictures.length > 0) {
+            console.log(pictures[currentIndex].fn_file)
             setImageId(pictures[currentIndex].fn_file);
             setImages(pictures[currentIndex].fn_file);
         }
@@ -93,10 +94,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
             const newCroppedArea = {
                 name: pictures[currentIndex].fn_file,
                 id: imageID,
-                x: crop.x,
-                y: crop.y,
-                width: crop.width,
-                height: crop.height,
+                x: crop.x / scale,
+                y: crop.y / scale,
+                width: crop.width / scale,
+                height: crop.height / scale,
                 type: selectedType
             };
             if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
@@ -237,19 +238,32 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
         pushDataToStorage();
     }, [state]);
 
-    useEffect(() => {
-    }, [meterData])
-
     const showMeterData = (toggle) => {
-        // const input = document.getElementById("input_meter_data");
         if (toggle) {
             document.getElementById("meter-state").style.opacity = "1";
-            // input.focus();
         } else {
-            // window.focus();
             document.getElementById("meter-state").style.opacity = "0";
         }
     }
+
+    useEffect(() => {
+        if (croppedAreas.length > 0) {
+            const adjustedCrops = croppedAreas.map((area) => {
+                const adjustmentFactor = 1 / scale;
+                console.log(document.getElementById("image").naturalWidth);
+                console.log(document.getElementById("image").naturalHeight);
+                return {
+                    ...area,
+                    x: area.x * adjustmentFactor,
+                    y: area.y * adjustmentFactor,
+                    width: area.width * adjustmentFactor,
+                    height: area.height * adjustmentFactor,
+                };
+            });
+
+            setCroppedAreas(adjustedCrops);
+        }
+    }, [scale]);
 
     return (
         <>
@@ -258,15 +272,15 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                     <button className={classes.type_btn_red}
                         style={setButtonStyleBtn(DEFAULT_TYPE1)}
                         onClick={() => swipeType(DEFAULT_TYPE1)}
-                    >Счётчик</button>
+                    >Счётчик [Q]</button>
                     <button className={classes.type_btn_green}
                         style={setButtonStyleBtn(DEFAULT_TYPE2)}
                         onClick={() => swipeType(DEFAULT_TYPE2)}
-                    >Пломба</button>
+                    >Пломба [W]</button>
                     <button className={classes.type_btn_blue}
                         style={setButtonStyleBtn(DEFAULT_TYPE3)}
                         onClick={() => swipeType(DEFAULT_TYPE3)}
-                    >Показание</button>
+                    >Показание [E]</button>
                 </section>
                 <section className={classes.navigation}>
                     <button onClick={() => swipeImage(STEP3)} disabled={currentIndex == 0}>
@@ -294,7 +308,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                         <button className={classes.prop_green}>Готово</button>
                     </section>
                     <div className={classes.container}>
-                        <div className={classes.content_container}>
+                        <div className={classes.content_container} style={{ transform: `scale(${scale})` }}>
                             {pictures.length > 0 && (
                                 <div className={classes.image_content}>
                                     <ReactCrop
@@ -302,8 +316,9 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                                         onChange={c => setCrop(c)}
                                         onComplete={onCompleteCrop}
                                         disabled={!selectedType}
+                                        keepSelection={true}
                                     >
-                                        <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" />
+                                        <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" id="image" />
                                         {croppedAreas.map((area, index) => (
                                             <div
                                                 className={classes.image}
