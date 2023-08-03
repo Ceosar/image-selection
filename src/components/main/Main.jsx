@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import classes from "./Main.module.css"
 import ReactCrop from 'react-image-crop'
-import 'react-image-crop/dist/ReactCrop.css'
+// import 'react-image-crop/dist/ReactCrop.css'
+import './ReactCrop.scss'
 
 import one_arrow_left from "../../assets/one_arrow_left.png"
 import one_arrow_right from "../../assets/one_arrow_right.png"
@@ -59,7 +60,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
 
     useEffect(() => {
         if (pictures.length > 0) {
-            console.log(pictures[currentIndex].fn_file)
             setImageId(pictures[currentIndex].fn_file);
             setImages(pictures[currentIndex].fn_file);
         }
@@ -91,13 +91,17 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
 
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
+            const originalImage = document.getElementById("image");
+            const scaleX = originalImage.naturalWidth / originalImage.width;
+            const scaleY = originalImage.naturalHeight / originalImage.height;
+
             const newCroppedArea = {
                 name: pictures[currentIndex].fn_file,
                 id: imageID,
-                x: crop.x / scale,
-                y: crop.y / scale,
-                width: crop.width / scale,
-                height: crop.height / scale,
+                x: crop.x * scaleX,
+                y: crop.y * scaleY,
+                width: crop.width * scaleX,
+                height: crop.height * scaleY,
                 type: selectedType
             };
             if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
@@ -107,7 +111,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
             setCroppedAreas([...croppedAreas, newCroppedArea]);
             setCrop(null);
             setRect(newCroppedArea);
+            console.log(document.getElementById("image").naturalWidth);
+            console.log(document.getElementById("image").naturalHeight);
         }
+        setScale(0.7)
     }
 
     const setRect = (newCroppedArea) => {
@@ -246,25 +253,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
         }
     }
 
-    useEffect(() => {
-        if (croppedAreas.length > 0) {
-            const adjustedCrops = croppedAreas.map((area) => {
-                const adjustmentFactor = 1 / scale;
-                console.log(document.getElementById("image").naturalWidth);
-                console.log(document.getElementById("image").naturalHeight);
-                return {
-                    ...area,
-                    x: area.x * adjustmentFactor,
-                    y: area.y * adjustmentFactor,
-                    width: area.width * adjustmentFactor,
-                    height: area.height * adjustmentFactor,
-                };
-            });
-
-            setCroppedAreas(adjustedCrops);
-        }
-    }, [scale]);
-
     return (
         <>
             <div className={classes.main_wrapper}>
@@ -286,11 +274,11 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                     <button onClick={() => swipeImage(STEP3)} disabled={currentIndex == 0}>
                         <img src={two_arrow_left} alt="" />
                     </button>
-                    <button onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
+                    <button title="Клавиша A" onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
                         <img src={one_arrow_left} alt="" />
                     </button>
                     <p>{currentIndex + 1}/{pictures.length}</p>
-                    <button onClick={() => swipeImage(STEP1)} disabled={currentIndex == (pictures.length - 1)}>
+                    <button title="Клавиша D" onClick={() => swipeImage(STEP1)} disabled={currentIndex == (pictures.length - 1)}>
                         <img src={one_arrow_right} alt="" />
                     </button>
                     <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (pictures.length - 1)}>
@@ -308,7 +296,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                         <button className={classes.prop_green}>Готово</button>
                     </section>
                     <div className={classes.container}>
-                        <div className={classes.content_container} style={{ transform: `scale(${scale})` }}>
+                        <div className={classes.content_container} >
                             {pictures.length > 0 && (
                                 <div className={classes.image_content}>
                                     <ReactCrop
@@ -316,7 +304,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                                         onChange={c => setCrop(c)}
                                         onComplete={onCompleteCrop}
                                         disabled={!selectedType}
-                                        keepSelection={true}
+                                        // keepSelection={true}
                                     >
                                         <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" id="image" />
                                         {croppedAreas.map((area, index) => (

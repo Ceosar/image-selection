@@ -19,7 +19,7 @@
 .image_content {}
 
 .image {
-    object-fit: cover;
+    object-fit:scale-down;
 }
 
 .navigation {
