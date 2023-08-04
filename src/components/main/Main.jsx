@@ -98,6 +98,19 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
             const newCroppedArea = {
                 name: pictures[currentIndex].fn_file,
                 id: imageID,
+                x: crop.x,
+                y: crop.y,
+                width: crop.width,
+                height: crop.height,
+                type: selectedType
+            };
+            if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
+                newCroppedArea.meterData = meterDataInput;
+            }
+
+            const copyCroppedArea = {
+                name: pictures[currentIndex].fn_file,
+                id: imageID,
                 x: crop.x * scaleX,
                 y: crop.y * scaleY,
                 width: crop.width * scaleX,
@@ -110,11 +123,11 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
 
             setCroppedAreas([...croppedAreas, newCroppedArea]);
             setCrop(null);
-            setRect(newCroppedArea);
+            setRect(copyCroppedArea);
             console.log(document.getElementById("image").naturalWidth);
             console.log(document.getElementById("image").naturalHeight);
         }
-        setScale(0.7)
+        //setScale(0.7)
     }
 
     const setRect = (newCroppedArea) => {
@@ -126,12 +139,16 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
 
     const setImages = (newImagesName) => {
         const imagesName = JSON.parse(localStorage.getItem('state2'));
-        const updatedArray = imagesName.images.slice();
-        if (!updatedArray.includes(newImagesName)) {
-            setImg((prevImg) => ({
-                ...prevImg,
-                images: [...prevImg.images, newImagesName],
-            }));
+        try {
+            const updatedArray = imagesName.images.slice();
+            if (!updatedArray.includes(newImagesName)) {
+                setImg((prevImg) => ({
+                    ...prevImg,
+                    images: [...prevImg.images, newImagesName],
+                }));
+            }
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -296,42 +313,42 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                         <button className={classes.prop_green}>Готово</button>
                     </section>
                     <div className={classes.container}>
-                        <div className={classes.content_container} >
-                            {pictures.length > 0 && (
-                                <div className={classes.image_content}>
-                                    <ReactCrop
-                                        crop={crop}
-                                        onChange={c => setCrop(c)}
-                                        onComplete={onCompleteCrop}
-                                        disabled={!selectedType}
-                                        // keepSelection={true}
-                                    >
-                                        <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" id="image" />
-                                        {croppedAreas.map((area, index) => (
-                                            <div
-                                                className={classes.image}
-                                                key={index}
-                                                style={{
-                                                    position: "absolute",
-                                                    border: `4px solid ${getBorderColorByType(area.type)}`,
-                                                    left: area.x,
-                                                    top: area.y,
-                                                    width: area.width,
-                                                    height: area.height
-                                                }}
-                                            />
-                                        ))}
-                                        {/* <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} /> */}
-                                    </ReactCrop>
-                                </div>
-                            )}
+                        <div className={classes.content_container}  >
+                            {/* {pictures.length > 0 && ( */}
+                            <div className={classes.image_content} >
+                                <ReactCrop
+                                    crop={crop}
+                                    onChange={c => setCrop(c)}
+                                    onComplete={onCompleteCrop}
+                                    disabled={!selectedType}
+                                // keepSelection={true}
+                                >
+                                    <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" id="image" />
+                                    {croppedAreas.map((area, index) => (
+                                        <div
+                                            className={classes.image}
+                                            key={index}
+                                            style={{
+                                                position: "absolute",
+                                                border: `4px solid ${getBorderColorByType(area.type)}`,
+                                                left: area.x,
+                                                top: area.y,
+                                                width: area.width,
+                                                height: area.height
+                                            }}
+                                        />
+                                    ))}
+                                    {/* <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} /> */}
+                                </ReactCrop>
+                            </div>
+                            {/* )} */}
                             {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
                             {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
                             {/* <img className={classes.image} src={`https://msk-mc-app.mrsk-1.ru/release/file?id=${fn_file}`} alt="" /> */}
                         </div>
                     </div>
                     <section hidden className={classes.meter_data} id="meter-state">
-                        <MeterDataForm state={state} setState={setState} pictures={pictures} currentIndex={currentIndex} meterData={Math.round(meterData)} meterDataInput={meterDataInput} setMeterDataInput={setMeterDataInput} />
+                        <MeterDataForm state={state} setState={setState} imageID={imageID} currentIndex={currentIndex} meterData={Math.round(meterData)} meterDataInput={meterDataInput} setMeterDataInput={setMeterDataInput} />
                     </section>
                 </div>
             </div>
