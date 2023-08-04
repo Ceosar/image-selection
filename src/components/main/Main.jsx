@@ -8,32 +8,28 @@ import one_arrow_left from "../../assets/one_arrow_left.png"
 import one_arrow_right from "../../assets/one_arrow_right.png"
 import two_arrow_left from "../../assets/two_arrow_left.png"
 import two_arrow_right from "../../assets/two_arrow_right.png"
-import { URL_IMAGE } from "../../helpers/constants";
 import MeterDataForm from "./meterDataForm/meterDataForm";
+import {
+    URL_IMAGE,
+    DEFAULT_TYPE1,
+    DEFAULT_TYPE2,
+    DEFAULT_TYPE3,
+    STEP1,
+    STEP2,
+    STEP3,
+    STEP4
+} from "../../helpers/constants";
 
-const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImages }) => {
-    const DEFAULT_TYPE1 = "meter";
-    const DEFAULT_TYPE2 = "seal";
-    const DEFAULT_TYPE3 = "indication";
-
-    const STEP1 = "next";
-    const STEP2 = "prev";
-    const STEP3 = "first";
-    const STEP4 = "last";
-
+const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
     const [selectedType, setSelectedType] = useState(DEFAULT_TYPE1);
     const [activeType, setActiveType] = useState(DEFAULT_TYPE1);
-    const [state, setState] = useState({
-        rect: []
-    })
     const [imageID, setImageId] = useState('');
-    const [img, setImg] = useState({
-        images: []
-    })
     const [meterDataInput, setMeterDataInput] = useState("");
     const [scale, setScale] = useState(0.7);
+    const [state, setState] = useState({ rect: [] })
+    const [img, setImg] = useState({ images: [] })
 
     const swipeImage = (arg) => {
         switch (arg) {
@@ -127,7 +123,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
             console.log(document.getElementById("image").naturalWidth);
             console.log(document.getElementById("image").naturalHeight);
         }
-        //setScale(0.7)
     }
 
     const setRect = (newCroppedArea) => {
@@ -182,12 +177,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
     useEffect(() => {
         const handleKeyPress = (e) => {
             switch (e.code) {
-                // case "Digit1":
-                //     break;
-                // case "Digit2":
-                //     break;
-                // case "Digit3":
-                //     break;
                 case "KeyQ":
                     swipeType(DEFAULT_TYPE1);
                     break;
@@ -238,7 +227,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
             rect: filteredRect
         }));
 
-        localStorage.setItem("state", JSON.stringify({ ...state, rect: filteredRect }));
+        localStorage.setItem(
+            "state",
+            JSON.stringify({ ...state, rect: filteredRect })
+        );
     };
 
     const checkPrev = () => {
@@ -288,17 +280,31 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                     >Показание [E]</button>
                 </section>
                 <section className={classes.navigation}>
-                    <button onClick={() => swipeImage(STEP3)} disabled={currentIndex == 0}>
+                    <button
+                        onClick={() => swipeImage(STEP3)}
+                        disabled={currentIndex == 0}
+                    >
                         <img src={two_arrow_left} alt="" />
                     </button>
-                    <button title="Клавиша A" onClick={() => swipeImage(STEP2)} disabled={currentIndex == 0}>
+                    <button
+                        title="Клавиша A"
+                        onClick={() => swipeImage(STEP2)}
+                        disabled={currentIndex == 0}
+                    >
                         <img src={one_arrow_left} alt="" />
                     </button>
                     <p>{currentIndex + 1}/{pictures.length}</p>
-                    <button title="Клавиша D" onClick={() => swipeImage(STEP1)} disabled={currentIndex == (pictures.length - 1)}>
+                    <button
+                        title="Клавиша D"
+                        onClick={() => swipeImage(STEP1)}
+                        disabled={currentIndex == (pictures.length - 1)}
+                    >
                         <img src={one_arrow_right} alt="" />
                     </button>
-                    <button onClick={() => swipeImage(STEP4)} disabled={currentIndex == (pictures.length - 1)}>
+                    <button
+                        onClick={() => swipeImage(STEP4)}
+                        disabled={currentIndex == (pictures.length - 1)}
+                    >
                         <img src={two_arrow_right} alt="" />
                     </button>
                 </section>
@@ -321,9 +327,13 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                                     onChange={c => setCrop(c)}
                                     onComplete={onCompleteCrop}
                                     disabled={!selectedType}
-                                // keepSelection={true}
                                 >
-                                    <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" id="image" />
+                                    <img
+                                        className={classes.image}
+                                        src={`${URL_IMAGE}${imageID}`}
+                                        alt=""
+                                        id="image"
+                                    />
                                     {croppedAreas.map((area, index) => (
                                         <div
                                             className={classes.image}
@@ -338,17 +348,20 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, selectedImag
                                             }}
                                         />
                                     ))}
-                                    {/* <img className={classes.image} src={selectedImages[currentIndex].url} alt={selectedImages[currentIndex].name} /> */}
                                 </ReactCrop>
                             </div>
-                            {/* )} */}
-                            {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
-                            {/* <img className={classes.image} src={`${URL_IMAGE}${imageID}`} alt="" /> */}
-                            {/* <img className={classes.image} src={`https://msk-mc-app.mrsk-1.ru/release/file?id=${fn_file}`} alt="" /> */}
                         </div>
                     </div>
                     <section hidden className={classes.meter_data} id="meter-state">
-                        <MeterDataForm state={state} setState={setState} imageID={imageID} currentIndex={currentIndex} meterData={Math.round(meterData)} meterDataInput={meterDataInput} setMeterDataInput={setMeterDataInput} />
+                        <MeterDataForm
+                            state={state}
+                            setState={setState}
+                            imageID={imageID}
+                            currentIndex={currentIndex}
+                            meterData={Math.round(meterData)}
+                            meterDataInput={meterDataInput}
+                            setMeterDataInput={setMeterDataInput}
+                        />
                     </section>
                 </div>
             </div>

@@ -3,12 +3,8 @@ import classes from "./Header.module.css"
 import axios from "axios";
 import { URL } from "../../helpers/constants";
 
-const Header = ({ setMeterData, pictures, setPictures, currentIndex, setSelectedImages, setToken, token }) => {
+const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, token }) => {
     const [count, setCount] = useState(10);
-    const [img, setImg] = useState({
-        images: []
-    });
-    // const [fn_file, setFn_file] = useState("");
 
     async function getPictures() {
         const response = await axios({
@@ -22,7 +18,14 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setSelected
                 action: "dd_pictures",
                 method: "Query",
                 "schema": "dbo",
-                data: [{ "limit": count, sort: [{ property: "fn_result", direction: 'ASC' }] }],
+                data: [{
+                    "limit": count,
+                    sort:
+                        [{
+                            property: "fn_result",
+                            direction: 'ASC'
+                        }]
+                }],
                 type: "rpc"
             }
         })
@@ -95,56 +98,10 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setSelected
         setToken("");
     }
 
-    // const uploadImage = (imageUrls) => {
-    //     const newImagesArray = imageUrls.map((imageUrl) => ({
-    //         url: imageUrl,
-    //         name: imageUrl.split("/").pop,
-    //     }));
-    //     setSelectedImages(newImagesArray);
-    //     setImg((prevImg) => ({
-    //         ...prevImg,
-    //         images: [...prevImg.images, ...newImagesArray],
-    //     }));
-    // }
-
-
-
-    // const uploadImage = (event) => {
-    //     const files = event.target.files;
-    //     const files = fn_file
-    //     const newImagesArray = [];
-    //     for (let i = 0; i < files.length; i++) {
-    //         const file = files[i]
-    //         const imageObject = {
-    //             url: URL.createObjectURL(file),
-    //             name: file.name,
-    //         };
-    //         newImagesArray.push(imageObject);
-    //     }
-    //     setSelectedImages(newImagesArray);
-    //     setImg((prevImg) => ({
-    //         ...prevImg,
-    //         images: [...prevImg.images, ...newImagesArray]
-    //     }));
-    // }
-
-    // useEffect(() => {
-    //     const pushDataToStorage = () => {
-    //         if (pictures.length > 0) {
-    //             localStorage.setItem("state2", JSON.stringify(img));
-    //         }
-    //     }
-    //     pushDataToStorage();
-    // }, [img])
-
     return (
         <>
             <div className={classes.wrapper}>
                 <div className={classes.container}>
-                    {/* <label className={classes.header_btns}>
-                        Открыть
-                        <input type="file" multiple onChange={uploadImage} />
-                    </label> */}
                     <label className={classes.input_container}>
                         Введите количество фотографий:
                         <div className={classes.input_photos}>
