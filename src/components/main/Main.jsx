@@ -147,12 +147,17 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
         }
     }
 
-    const pushImagesToStorage = () => {
-        localStorage.setItem("state2", JSON.stringify(img));
-    }
-
-    const pushDataToStorage = () => {
-        localStorage.setItem("state", JSON.stringify(state));
+    const pushDataToStorage = (arg) => {
+        switch (arg) {
+            case "data":
+                localStorage.setItem("state", JSON.stringify(state));
+                break;
+            case "images":
+                localStorage.setItem("state2", JSON.stringify(img));
+                break;
+            default:
+                break;
+        }
     }
 
     const getBorderColorByType = (type) => {
@@ -247,11 +252,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
             setState(parsedState);
             checkPrev();
         }
-        pushImagesToStorage();
+        // pushImagesToStorage();
+        pushDataToStorage("images");
     }, [currentIndex]);
 
     useEffect(() => {
-        pushDataToStorage();
+        pushDataToStorage("data");
     }, [state]);
 
     const showMeterData = (toggle) => {
