@@ -30,6 +30,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     const [scale, setScale] = useState(0.7);
     const [state, setState] = useState({ rect: [] })
     const [img, setImg] = useState({ images: [] })
+    const [noElements, setNoElements] = useState(false);
 
     const swipeImage = (arg) => {
         switch (arg) {
@@ -52,6 +53,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
         setSelectedType(DEFAULT_TYPE1);
         setActiveType(DEFAULT_TYPE1);
         showMeterData(0);
+        setNoElements(false);
     }
 
     useEffect(() => {
@@ -85,6 +87,18 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
         }
     }
 
+    useEffect(() => {
+        console.log(state.rect);
+        if (state.rect.length > 0) {
+            state.rect.forEach((element) => {
+                if(element.name === pictures[currentIndex].fn_file && element.type === "none"){
+                    setNoElements(true);
+
+                }
+            })
+        }
+    }, [currentIndex])
+
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
             const originalImage = document.getElementById("image");
@@ -102,6 +116,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
             };
             if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
                 newCroppedArea.meterData = meterDataInput;
+            }
+            if (selectedType === 'none') {
+                setNoElements(true);
+            }
+            else {
+                setNoElements(false);
             }
 
             const copyCroppedArea = {
@@ -210,6 +230,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     }, [currentIndex, pictures.length]);
 
     const noneType = () => {
+        setNoElements(true);
         deleteRect();
 
         const newCroppedArea = {
@@ -332,10 +353,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                                     crop={crop}
                                     onChange={c => setCrop(c)}
                                     onComplete={onCompleteCrop}
-                                    disabled={!selectedType}
+                                    disabled={noElements}
                                 >
                                     <img
-                                        className={classes.image}
+                                        className={`${classes.image} ${noElements ? classes.no_elem : ''}`}
                                         src={`${URL_IMAGE}${imageID}`}
                                         alt=""
                                         id="image"

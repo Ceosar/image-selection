@@ -22,6 +22,10 @@
     object-fit:scale-down;
 }
 
+.no_elem{
+    filter: grayscale(100%);
+}
+
 .navigation {
     display: flex;
     justify-content: center;
