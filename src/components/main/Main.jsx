@@ -53,7 +53,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
         setSelectedType(DEFAULT_TYPE1);
         setActiveType(DEFAULT_TYPE1);
         showMeterData(0);
-        setNoElements(false);
+        noElemFill(0);
     }
 
     useEffect(() => {
@@ -88,20 +88,23 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     }
 
     useEffect(() => {
-        console.log(state.rect);
         if (state.rect.length > 0) {
             state.rect.forEach((element) => {
-                if(element.name === pictures[currentIndex].fn_file && element.type === "none"){
-                    setNoElements(true);
-
+                if (
+                    element.name === pictures[currentIndex].fn_file
+                    &&
+                    element.type === "none"
+                ) {
+                    noElemFill(1);
                 }
             })
+
         }
     }, [currentIndex])
 
+    const originalImage = document.getElementById("image");
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
-            const originalImage = document.getElementById("image");
             const scaleX = originalImage.naturalWidth / originalImage.width;
             const scaleY = originalImage.naturalHeight / originalImage.height;
 
@@ -137,7 +140,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                 newCroppedArea.meterData = meterDataInput;
             }
 
-            setCroppedAreas([...croppedAreas, newCroppedArea]);
+            setCroppedAreas([...croppedAreas, copyCroppedArea]);
             setCrop(null);
             setRect(copyCroppedArea);
             console.log(document.getElementById("image").naturalWidth);
@@ -230,8 +233,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     }, [currentIndex, pictures.length]);
 
     const noneType = () => {
-        setNoElements(true);
         deleteRect();
+        noElemFill(1);
 
         const newCroppedArea = {
             name: pictures[currentIndex].fn_file,
@@ -243,7 +246,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     }
 
     const deleteRect = () => {
-        setCroppedAreas([])
+        noElemFill(0);
+        setCroppedAreas([]);
         const filteredRect = state.rect.filter(
             (element) => element.name !== pictures[currentIndex].fn_file
         );
@@ -286,6 +290,16 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
             document.getElementById("meter-state").style.opacity = "1";
         } else {
             document.getElementById("meter-state").style.opacity = "0";
+        }
+    }
+
+    const noElemFill = (arg) => {
+        if (arg) {
+            setNoElements(true)
+            document.getElementById("no_elements").style.opacity = "1"
+        } else {
+            setNoElements(false);
+            document.getElementById("no_elements").style.opacity = "0";
         }
     }
 
@@ -355,23 +369,50 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                                     onComplete={onCompleteCrop}
                                     disabled={noElements}
                                 >
+                                    <div
+                                        id="no_elements"
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            top: "40%",
+                                            textAlign: "center",
+                                            position: "absolute",
+                                            fontSize: "100px",
+                                            color: "white",
+                                            opacity: "0",
+                                            zIndex: "999",
+                                            textShadow: "-2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000",
+                                            transition: "all .1s"
+                                        }}
+                                    >Нет элеменmов</div>
                                     <img
                                         className={`${classes.image} ${noElements ? classes.no_elem : ''}`}
                                         src={`${URL_IMAGE}${imageID}`}
                                         alt=""
                                         id="image"
+                                    // style={{ transform: `scale(${scale})` }}
                                     />
+                                    {/* <div
+                                        className={classes.test_image}
+                                        style={{
+                                            width: '1000px',
+                                            height: '1000px',
+                                            background: `url(${URL_IMAGE}${imageID}) no-repeat 50% 0`,
+                                        }}
+                                    ></div> */}
                                     {croppedAreas.map((area, index) => (
                                         <div
                                             className={classes.image}
                                             key={index}
                                             style={{
+                                                width: '100%',
+                                                height: '100%',
                                                 position: "absolute",
                                                 border: `4px solid ${getBorderColorByType(area.type)}`,
-                                                left: area.x,
-                                                top: area.y,
-                                                width: area.width,
-                                                height: area.height
+                                                left: area.x / (originalImage.naturalWidth / originalImage.width),
+                                                top: area.y / (originalImage.naturalHeight / originalImage.height),
+                                                width: area.width / (originalImage.naturalWidth / originalImage.width),
+                                                height: area.height / (originalImage.naturalHeight / originalImage.height)
                                             }}
                                         />
                                     ))}

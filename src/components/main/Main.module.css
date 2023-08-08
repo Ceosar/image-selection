@@ -1,4 +1,5 @@
 .main_wrapper {
+    width: 1150px;
     margin: 0 auto;
 }
 
@@ -8,6 +9,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 30px;
 }
 
 .container {
@@ -19,11 +21,15 @@
 .image_content {}
 
 .image {
-    object-fit:scale-down;
+    /* object-fit: scale-down; */
+    background-position: center 0;
+    background-image: url();
 }
 
-.no_elem{
-    filter: grayscale(100%);
+.no_elem {
+    /* backdrop-filter: blur(10px); */
+    filter: grayscale(100%) blur(10px);
+    transition: all .3s;
 }
 
 .navigation {

@@ -3,6 +3,8 @@
     border: 2px solid rgb(39, 39, 41);
     border-radius: 5px;
     padding: 10px;
+    display: flex;
+
 }
 
 .input_meter_data button{
