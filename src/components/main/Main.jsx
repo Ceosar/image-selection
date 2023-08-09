@@ -31,6 +31,11 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     const [state, setState] = useState({ rect: [] })
     const [img, setImg] = useState({ images: [] })
     const [noElements, setNoElements] = useState(false);
+    const [loading, setLoading] = useState(0);
+
+    const isLoading = () => {
+        setLoading(1);
+    }
 
     const swipeImage = (arg) => {
         switch (arg) {
@@ -54,6 +59,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
         setActiveType(DEFAULT_TYPE1);
         showMeterData(0);
         noElemFill(0);
+        setLoading(0);
     }
 
     useEffect(() => {
@@ -119,6 +125,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
             };
             if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
                 newCroppedArea.meterData = meterDataInput;
+                const inp = document.getElementById('input_meter_data');
+                inp.focus();
             }
             if (selectedType === 'none') {
                 setNoElements(true);
@@ -292,9 +300,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
         if (toggle) {
             document.getElementById("meter-state").style.opacity = "1";
             const inp = document.getElementById('input_meter_data');
-            setTimeout(() => {
-                inp.focus();
-            }, 1000);
+            inp.focus();
         } else {
             document.getElementById("meter-state").style.opacity = "0";
         }
@@ -393,6 +399,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                                         }}
                                     >Нет элеменmов</div>
                                     <img
+                                        onLoad={isLoading}
                                         className={`${classes.image} ${noElements ? classes.no_elem : ''}`}
                                         src={`${URL_IMAGE}${imageID}`}
                                         alt=""
@@ -408,7 +415,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                                         }}
                                     ></div> */}
                                     {croppedAreas.map((area, index) => {
-                                        if (area.x || area.x === 0) {
+                                        if (loading) {
                                             return <div
                                                 className={classes.image}
                                                 key={index}

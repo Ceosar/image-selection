@@ -49,6 +49,12 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
                     type="number"
                     onChange={handleMeterDataInput}
                     id="input_meter_data"
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                            sendMeterData();
+                            document.activeElement.blur();
+                        }
+                    }}
                 />
                 <button
                     id="input_meter_btn"
