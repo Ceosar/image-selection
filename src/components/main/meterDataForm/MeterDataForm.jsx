@@ -46,7 +46,7 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
                 id="input_form_meter_data"
             >
                 <input
-                    type="text"
+                    type="number"
                     onChange={handleMeterDataInput}
                     id="input_meter_data"
                 />

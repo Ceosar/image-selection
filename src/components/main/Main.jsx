@@ -204,24 +204,27 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
 
     useEffect(() => {
         const handleKeyPress = (e) => {
-            switch (e.code) {
-                case "KeyQ":
-                    swipeType(DEFAULT_TYPE1);
-                    break;
-                case "KeyW":
-                    swipeType(DEFAULT_TYPE2);
-                    break;
-                case "KeyE":
-                    swipeType(DEFAULT_TYPE3);
-                    break;
-                case "KeyA":
-                    if (currentIndex > 0) swipeImage(STEP2);
-                    break;
-                case "KeyD":
-                    if (currentIndex < pictures.length - 1) swipeImage(STEP1);
-                    break;
-                default:
-                    break;
+            if (e.target.id != "input_meter_data") {
+                console.log(1);
+                switch (e.code) {
+                    case "KeyQ":
+                        swipeType(DEFAULT_TYPE1);
+                        break;
+                    case "KeyW":
+                        swipeType(DEFAULT_TYPE2);
+                        break;
+                    case "KeyE":
+                        swipeType(DEFAULT_TYPE3);
+                        break;
+                    case "KeyA":
+                        if (currentIndex > 0) swipeImage(STEP2);
+                        break;
+                    case "KeyD":
+                        if (currentIndex < pictures.length - 1) swipeImage(STEP1);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -288,6 +291,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     const showMeterData = (toggle) => {
         if (toggle) {
             document.getElementById("meter-state").style.opacity = "1";
+            const inp = document.getElementById('input_meter_data');
+            setTimeout(() => {
+                inp.focus();
+            }, 1000);
         } else {
             document.getElementById("meter-state").style.opacity = "0";
         }
@@ -372,12 +379,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                                     <div
                                         id="no_elements"
                                         style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            top: "40%",
+                                            // width: "100%",
+                                            // height: "100%",
+                                            // top: "40%",
                                             textAlign: "center",
                                             position: "absolute",
-                                            fontSize: "100px",
+                                            fontSize: "50px",
                                             color: "white",
                                             opacity: "0",
                                             zIndex: "999",
@@ -400,22 +407,24 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                                             background: `url(${URL_IMAGE}${imageID}) no-repeat 50% 0`,
                                         }}
                                     ></div> */}
-                                    {croppedAreas.map((area, index) => (
-                                        <div
-                                            className={classes.image}
-                                            key={index}
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                position: "absolute",
-                                                border: `4px solid ${getBorderColorByType(area.type)}`,
-                                                left: area.x / (originalImage.naturalWidth / originalImage.width),
-                                                top: area.y / (originalImage.naturalHeight / originalImage.height),
-                                                width: area.width / (originalImage.naturalWidth / originalImage.width),
-                                                height: area.height / (originalImage.naturalHeight / originalImage.height)
-                                            }}
-                                        />
-                                    ))}
+                                    {croppedAreas.map((area, index) => {
+                                        if (area.x || area.x === 0) {
+                                            return <div
+                                                className={classes.image}
+                                                key={index}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    position: "absolute",
+                                                    border: `4px solid ${getBorderColorByType(area.type)}`,
+                                                    left: area.x / (originalImage.naturalWidth / originalImage.width),
+                                                    top: area.y / (originalImage.naturalHeight / originalImage.height),
+                                                    width: area.width / (originalImage.naturalWidth / originalImage.width),
+                                                    height: area.height / (originalImage.naturalHeight / originalImage.height)
+                                                }}
+                                            />
+                                        }
+                                    })}
                                 </ReactCrop>
                             </div>
                         </div>
