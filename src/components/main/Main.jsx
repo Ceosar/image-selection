@@ -10,6 +10,7 @@ import two_arrow_left from "../../assets/two_arrow_left.png"
 import two_arrow_right from "../../assets/two_arrow_right.png"
 import MeterDataForm from "./meterDataForm/meterDataForm";
 import {
+    URL,
     URL_IMAGE,
     DEFAULT_TYPE1,
     DEFAULT_TYPE2,
@@ -19,15 +20,15 @@ import {
     STEP3,
     STEP4
 } from "../../helpers/constants";
+import axios from "axios";
 
-const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
+const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotification}) => {
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
     const [selectedType, setSelectedType] = useState(DEFAULT_TYPE1);
     const [activeType, setActiveType] = useState(DEFAULT_TYPE1);
     const [imageID, setImageId] = useState('');
     const [meterDataInput, setMeterDataInput] = useState("");
-    const [scale, setScale] = useState(0.7);
     const [state, setState] = useState({ rect: [] })
     const [img, setImg] = useState({ images: [] })
     const [noElements, setNoElements] = useState(false);
@@ -38,6 +39,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     }
 
     const swipeImage = (arg) => {
+        sendDataToBack(pictures[currentIndex].fn_file);
         switch (arg) {
             case STEP1:
                 setCurrentIndex(currentIndex + 1);
@@ -138,10 +140,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
             const copyCroppedArea = {
                 name: pictures[currentIndex].fn_file,
                 id: imageID,
-                x: crop.x * scaleX,
-                y: crop.y * scaleY,
-                width: crop.width * scaleX,
-                height: crop.height * scaleY,
+                x: parseFloat((crop.x * scaleX).toFixed(2)),
+                y: parseFloat((crop.y * scaleY).toFixed(2)),
+                width: parseFloat((crop.width * scaleX).toFixed(2)),
+                height: parseFloat((crop.height * scaleY).toFixed(2)),
                 type: selectedType
             };
             if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
@@ -213,7 +215,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     useEffect(() => {
         const handleKeyPress = (e) => {
             if (e.target.id != "input_meter_data") {
-                console.log(1);
                 switch (e.code) {
                     case "KeyQ":
                         swipeType(DEFAULT_TYPE1);
@@ -223,6 +224,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                         break;
                     case "KeyE":
                         swipeType(DEFAULT_TYPE3);
+                        e.preventDefault()
                         break;
                     case "KeyA":
                         if (currentIndex > 0) swipeImage(STEP2);
@@ -257,6 +259,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
     }
 
     const deleteRect = () => {
+        notificationFunction("Сброс выполнен!", "red")
         noElemFill(0);
         setCroppedAreas([]);
         const filteredRect = state.rect.filter(
@@ -316,6 +319,49 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
         }
     }
 
+    const notificationFunction = (message, color) => {
+        showNotification(message, color)
+    }
+
+    async function sendDataToBack(imageID) {
+        try {
+            // const currentImage = img.images.find(image => image === imageID);
+            const filteredRect = state.rect.filter(element => element.id === imageID);
+            if (filteredRect.length > 0) {
+                const response = await axios({
+                    method: 'post',
+                    url: `${URL}/rpc`,
+                    headers: {
+                        "rpc-authorization": `Token ${localStorage.getItem('Token')}`,
+                        "Content-Type": "application/json"
+                    },
+                    data: {
+                        action: "sd_attachments",
+                        method: "AddOrUpdate",
+                        "schema": "dbo",
+                        data: [{
+                            'id': imageID,
+                            'f_user': 3,
+                            'c_name': `${imageID}.jpg`,
+                            'jb_data': JSON.stringify(filteredRect),
+                        }],
+                        type: "rpc"
+                    }
+                });
+                console.log(response.data[0].code)
+                if (response.data[0].code === 200) {
+                    notificationFunction("Успешно!", "green")
+                } else (
+                    notificationFunction("УПС! Произошла ошибка!", "red")
+                )
+            }
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+
     return (
         <>
             <div className={classes.main_wrapper}>
@@ -364,13 +410,18 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                 </section>
                 <div className={classes.wrapper}>
                     <section className={classes.properties}>
-                        <button className={classes.prop_red}
+                        <button
+                            className={classes.prop_red}
                             onClick={noneType}
                         >Нет элементов</button>
-                        <button className={classes.prop_yellow}
+                        <button
+                            className={classes.prop_yellow}
                             onClick={deleteRect}
                         >Сброс</button>
-                        <button className={classes.prop_green}>Готово</button>
+                        <button
+                            className={classes.prop_green}
+                            onClick={() => sendDataToBack(imageID)}
+                        >Готово</button>
                     </section>
                     <div className={classes.container}>
                         <div className={classes.content_container}  >
@@ -404,16 +455,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex }) => {
                                         src={`${URL_IMAGE}${imageID}`}
                                         alt=""
                                         id="image"
-                                    // style={{ transform: `scale(${scale})` }}
                                     />
-                                    {/* <div
-                                        className={classes.test_image}
-                                        style={{
-                                            width: '1000px',
-                                            height: '1000px',
-                                            background: `url(${URL_IMAGE}${imageID}) no-repeat 50% 0`,
-                                        }}
-                                    ></div> */}
                                     {croppedAreas.map((area, index) => {
                                         if (loading) {
                                             return <div

@@ -3,7 +3,7 @@ import classes from "./Header.module.css"
 import axios from "axios";
 import { URL } from "../../helpers/constants";
 
-const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, token }) => {
+const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, token, showNotification }) => {
     const [count, setCount] = useState(10);
 
     async function getPictures() {
@@ -48,6 +48,8 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
                     method: "Query",
                     "schema": "dbo",
                     data: [{
+                        'id': '',
+                        'jb': '',
                         filter: [{
                             "property": "fn_result",
                             "value": fn_result
@@ -77,8 +79,9 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
         setPictures(_pictures);
     }
 
-    const handlerLoader = () => {
-        setCount(document.getElementById("countPhotos").value);
+    const handlerLoader = (counts) => {
+        notificationFunction(`Выполняется загрузка ${counts} фотографий`, "green");
+        setCount(counts);
         handlerUpload();
     }
 
@@ -98,17 +101,33 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
         setToken("");
     }
 
+    const notificationFunction = (message, color) => {
+        showNotification(message, color)
+    }
+
     return (
         <>
             <div className={classes.wrapper}>
                 <div className={classes.container}>
-                    <label className={classes.input_container}>
+                    <div className={classes.input_container}>
                         Введите количество фотографий:
                         <div className={classes.input_photos}>
-                            <input id="countPhotos" />
-                            <button onClick={handlerLoader}>+</button>
+                            {/* <input id="countPhotos" />
+                            <button onClick={handlerLoader}>+</button> */}
+                            <button
+                                className={classes.btn_inputs}
+                                onClick={() => handlerLoader(10)}
+                            >10</button>
+                            <button
+                                className={classes.btn_inputs}
+                                onClick={() => handlerLoader(50)}
+                            >50</button>
+                            <button
+                                className={classes.btn_inputs}
+                                onClick={() => handlerLoader(100)}
+                            >100</button>
                         </div>
-                    </label>
+                    </div>
                     <label className={classes.header_btns}
                         onClick={handleExit}
                     >

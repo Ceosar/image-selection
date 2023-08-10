@@ -37,27 +37,41 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
+    gap: 10px;
 }
 
 .input_photos{
     display: flex;
     flex-direction: row;
-    margin-left: 10px;
-    padding: 10px;
-    box-shadow: inset 0px 0px 5px 1px grey;
-    border-radius: 15px;
-    background-color: aliceblue;
+    gap: 10px;
+}
+
+.btn_inputs{
+    /* padding: 5px; */
+    /* margin: 5px; */
+    background-color: rgb(255, 255, 255);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    transition: all .4s;
+}
+
+.btn_inputs:hover{
+    background-color: azure;
+}
+
+.btn_inputs:active{
+    background-color: green;
 }
 
 .input_photos input{
-    width: 50px;
 }
 
-.input_photos button{
+/* .input_photos button{
     background-color: green;
     color: white;
     width: 20px;
     height: 20px;
     font-weight: 900;
     border-radius: 50%;
-}
+} */

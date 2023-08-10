@@ -1,0 +1,27 @@
+.popup_body_red{
+    top: 70px;
+    left: 30px;
+    width: 500px;
+    height: 50px;
+    background-color: rgb(255, 95, 95);
+    position: fixed;
+    font-size: 25px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup_body_green{
+    top: 70px;
+    left: 30px;
+    width: 500px;
+    height: 50px;
+    background-color: rgb(38, 231, 0);
+    position: fixed;
+    font-size: 25px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

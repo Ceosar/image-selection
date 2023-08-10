@@ -14,11 +14,18 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
     }
 
     const sendMeterData = () => {
-        const foundMeterData = state.rect.find(element => element.type == "indication" && element.name === imageID)
-        if (foundMeterData) {
-            const updatedState = { ...state };
-            updatedState.rect[updatedState.rect.length - 1].meterData = meterDataInput;
-            setState(updatedState);
+        const updatedRect = [...state.rect];
+        const foundIndex = updatedRect.findIndex(element => element.type === "indication" && element.name === imageID);
+
+        if (foundIndex !== -1) {
+            updatedRect[foundIndex] = {
+                ...updatedRect[foundIndex],
+                meterData: meterDataInput
+            };
+            setState(prevState => ({
+                ...prevState,
+                rect: updatedRect
+            }));
             setResultMeter(meterDataInput);
         } else {
             setResultMeter('Выделите область!');
@@ -55,6 +62,7 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
                             document.activeElement.blur();
                         }
                     }}
+                    onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
                 />
                 <button
                     id="input_meter_btn"
