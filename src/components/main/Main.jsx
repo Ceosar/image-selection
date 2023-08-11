@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useDebugValue, useEffect, useState } from "react";
 import classes from "./Main.module.css"
 import ReactCrop from 'react-image-crop'
 // import 'react-image-crop/dist/ReactCrop.css'
@@ -22,7 +22,7 @@ import {
 } from "../../helpers/constants";
 import axios from "axios";
 
-const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotification}) => {
+const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotification }) => {
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
     const [selectedType, setSelectedType] = useState(DEFAULT_TYPE1);
@@ -232,6 +232,13 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                     case "KeyD":
                         if (currentIndex < pictures.length - 1) swipeImage(STEP1);
                         break;
+                    case "KeyZ":
+                        noneType();
+                        break;
+                    case "KeyX":
+                        deleteRect();
+                        break;
+
                     default:
                         break;
                 }
@@ -246,24 +253,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }, [currentIndex, pictures.length]);
 
     const noneType = () => {
-        deleteRect();
+        // deleteRect();
         noElemFill(1);
 
-        const newCroppedArea = {
-            name: pictures[currentIndex].fn_file,
-            id: pictures[currentIndex].fn_file,
-            type: "none"
-        };
-
-        setRect(newCroppedArea);
-    }
-
-    const deleteRect = () => {
-        notificationFunction("Сброс выполнен!", "red")
-        noElemFill(0);
         setCroppedAreas([]);
         const filteredRect = state.rect.filter(
-            (element) => element.name !== pictures[currentIndex].fn_file
+            (element) => element.id !== pictures[currentIndex].fn_file
         );
 
         setState((prevState) => ({
@@ -275,11 +270,73 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             "state",
             JSON.stringify({ ...state, rect: filteredRect })
         );
+
+        const newCroppedArea = {
+            name: pictures[currentIndex].fn_file,
+            id: pictures[currentIndex].fn_file,
+            type: "none"
+        };
+
+        setRect(newCroppedArea);
+    }
+
+    const [isChanges, setIsChanges] = useState(false);
+
+    useEffect(() => {
+        setIsChanges(true);
+        if(isChanges){
+            
+        }
+    },[state.rect, isChanges])
+
+    useEffect(() => {
+        const filteredRect = state.rect.filter(element => element.id === imageID);
+        console.log(filteredRect);
+        console.log(isChanges)
+        if(filteredRect.length === 0 && isChanges){
+            console.log("заполнение")
+            setIsChanges(false);
+        }
+        setIsChanges(false);
+    }, [currentIndex])
+
+    const deleteRect = () => {
+        notificationFunction("Сброс выполнен!", "red")
+        noElemFill(0);
+        setCroppedAreas([]);
+        const filteredRect = state.rect.filter(
+            (element) => element.id !== pictures[currentIndex].fn_file
+        );
+
+        setState((prevState) => ({
+            ...prevState,
+            rect: filteredRect
+        }));
+
+        localStorage.setItem(
+            "state",
+            JSON.stringify({ ...state, rect: filteredRect })
+        );
+
     };
+
+    const emptyPicture = () => {
+            const newCroppedArea = {
+                id: pictures[currentIndex].fn_file,
+                name: pictures[currentIndex].fn_file,
+            };
+            setRect(newCroppedArea)
+    }
+
+    // const emptyPicture = () => {
+    //     const hasNoRect = state.rect.every(element => element.id !== pictures[currentIndex].fn_file);
+    //     if (hasNoRect) {
+    //     }
+    // }
 
     const checkPrev = () => {
         const filterRect = state.rect.filter(
-            (element) => pictures[currentIndex].fn_file == element.name
+            (element) => pictures[currentIndex].fn_file == element.id
         )
         setCroppedAreas(filterRect);
     }
@@ -361,7 +418,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         }
     }
 
-
     return (
         <>
             <div className={classes.main_wrapper}>
@@ -391,7 +447,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         onClick={() => swipeImage(STEP2)}
                         disabled={currentIndex == 0}
                     >
-                        <img src={one_arrow_left} alt="" />
+                        {/* <img src={one_arrow_left} alt="" /> */}
+                        <p>Назад [A]</p>
                     </button>
                     <p>{currentIndex + 1}/{pictures.length}</p>
                     <button
@@ -399,7 +456,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         onClick={() => swipeImage(STEP1)}
                         disabled={currentIndex == (pictures.length - 1)}
                     >
-                        <img src={one_arrow_right} alt="" />
+                        {/* <img src={one_arrow_right} alt="" /> */}
+                        <p>Вперёд [D]</p>
                     </button>
                     <button
                         onClick={() => swipeImage(STEP4)}
@@ -413,11 +471,11 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         <button
                             className={classes.prop_red}
                             onClick={noneType}
-                        >Нет элементов</button>
+                        >Нет элементов [Z]</button>
                         <button
                             className={classes.prop_yellow}
                             onClick={deleteRect}
-                        >Сброс</button>
+                        >Сброс [X]</button>
                         <button
                             className={classes.prop_green}
                             onClick={() => sendDataToBack(imageID)}

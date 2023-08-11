@@ -7,6 +7,7 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
     const [count, setCount] = useState(10);
 
     async function getPictures() {
+        notificationFunction(`Выполняется загрузка ${count} фотографий`, "green");
         const response = await axios({
             method: 'post',
             url: `${URL}/rpc`,
@@ -79,9 +80,9 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
         setPictures(_pictures);
     }
 
-    const handlerLoader = (counts) => {
-        notificationFunction(`Выполняется загрузка ${counts} фотографий`, "green");
+    function handlerLoader(counts) {
         setCount(counts);
+        handlerUpload();
         handlerUpload();
     }
 
@@ -116,15 +117,24 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
                             <button onClick={handlerLoader}>+</button> */}
                             <button
                                 className={classes.btn_inputs}
-                                onClick={() => handlerLoader(10)}
+                                onClick={() => {
+                                    // setCount(10)
+                                    handlerLoader(10)
+                                }}
                             >10</button>
                             <button
                                 className={classes.btn_inputs}
-                                onClick={() => handlerLoader(50)}
+                                onClick={() => {
+                                    // setCount(50)
+                                    handlerLoader(50)
+                                }}
                             >50</button>
                             <button
                                 className={classes.btn_inputs}
-                                onClick={() => handlerLoader(100)}
+                                onClick={() => {
+                                    // setCount(100)
+                                    handlerLoader(100)
+                                }}
                             >100</button>
                         </div>
                     </div>

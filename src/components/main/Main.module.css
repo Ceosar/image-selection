@@ -42,11 +42,20 @@
 
 .navigation p {
     width: 100px;
+    text-align: center;
+}
+
+.navigation img {
+    width: 100px;
 }
 
 .navigation button {
     width: 50px;
     transition: all .4s;
+}
+
+.navigation button p {
+    font-size: 20px;
 }
 
 .navigation button:hover {
