@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import classes from "./Header.module.css"
 import axios from "axios";
 import { URL } from "../../helpers/constants";
 
 const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, token, showNotification }) => {
-    const [count, setCount] = useState(10);
 
-    async function getPictures() {
-        notificationFunction(`Выполняется загрузка ${count} фотографий`, "green");
+    async function getPictures(counts) {
+        if(counts === undefined){
+            counts = 10;
+        }
+        notificationFunction(`Выполняется загрузка ${counts} фотографий`, "green");
         const response = await axios({
             method: 'post',
             url: `${URL}/rpc`,
@@ -20,7 +22,7 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
                 method: "Query",
                 "schema": "dbo",
                 data: [{
-                    "limit": count,
+                    "limit": counts,
                     sort:
                         [{
                             property: "fn_result",
@@ -75,15 +77,9 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
         }
     }
 
-    async function handlerUpload() {
-        const _pictures = await getPictures();
+    async function handlerUpload(counts) {
+        const _pictures = await getPictures(counts);
         setPictures(_pictures);
-    }
-
-    function handlerLoader(counts) {
-        setCount(counts);
-        handlerUpload();
-        handlerUpload();
     }
 
     useEffect(() => {
@@ -113,27 +109,22 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
                     <div className={classes.input_container}>
                         Введите количество фотографий:
                         <div className={classes.input_photos}>
-                            {/* <input id="countPhotos" />
-                            <button onClick={handlerLoader}>+</button> */}
                             <button
                                 className={classes.btn_inputs}
                                 onClick={() => {
-                                    // setCount(10)
-                                    handlerLoader(10)
+                                    handlerUpload(10)
                                 }}
                             >10</button>
                             <button
                                 className={classes.btn_inputs}
                                 onClick={() => {
-                                    // setCount(50)
-                                    handlerLoader(50)
+                                    handlerUpload(50)
                                 }}
                             >50</button>
                             <button
                                 className={classes.btn_inputs}
                                 onClick={() => {
-                                    // setCount(100)
-                                    handlerLoader(100)
+                                    handlerUpload(100)
                                 }}
                             >100</button>
                         </div>
