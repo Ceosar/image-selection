@@ -1,8 +1,8 @@
-import { useDebugValue, useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import classes from "./Main.module.css"
 import ReactCrop from 'react-image-crop'
-// import 'react-image-crop/dist/ReactCrop.css'
 import './ReactCrop.scss'
+import axios from "axios";
 
 import one_arrow_left from "../../assets/one_arrow_left.png"
 import one_arrow_right from "../../assets/one_arrow_right.png"
@@ -20,7 +20,6 @@ import {
     STEP3,
     STEP4
 } from "../../helpers/constants";
-import axios from "axios";
 
 const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotification }) => {
     const [crop, setCrop] = useState(null);
@@ -39,7 +38,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }
 
     const swipeImage = (arg) => {
-        // sendDataToBack();
         switch (arg) {
             case STEP1:
                 setCurrentIndex(currentIndex + 1);
@@ -112,11 +110,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }, [currentIndex])
 
     const removeRectItems = () => {
-        console.log(imageID)
-        // const filteredRect = state.rect.filter(
-        //     (element) => element.id != pictures[currentIndex].fn_file && Object.keys(element).length !== 2
-        // );
-
         const filteredRect = state.rect.filter((element) => {
             const isMatching = element.id === pictures[currentIndex].fn_file && Object.keys(element).length === 2;
             return !isMatching;
@@ -135,7 +128,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
 
     }
 
-    const originalImage = document.getElementById("image");
+    const originalImageRef = useRef(null);
+    const originalImage = originalImageRef.current;
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
             const scaleX = originalImage.naturalWidth / originalImage.width;
@@ -266,7 +260,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                     case "KeyX":
                         deleteRect();
                         break;
-
                     default:
                         break;
                 }
@@ -281,7 +274,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }, [currentIndex, pictures.length]);
 
     const noneType = () => {
-        // deleteRect();
         noElemFill(1);
 
         setCroppedAreas([]);
@@ -312,36 +304,16 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
 
     useEffect(() => {
         const filteredRect = state.rect.filter(element => element.id === imageID);
-        // console.log(filteredRect.length === 0);
-        // console.log(isChanges);
         if (filteredRect.length === 0 && isChanges) {
             console.log("заполнение")
             const newCroppedArea = {
                 id: pictures[currentIndex].fn_file,
                 name: pictures[currentIndex].fn_file,
             };
-            // setState(prevState => ({
-            //     ...prevState,
-            //     rect: [...prevState.rect, newCroppedArea]
-            // }));
             setRect(newCroppedArea);
         }
         setIsChanges(false);
     }, [currentIndex, isChanges])
-
-    // const pushEmptyPic = () => {
-    //     const filteredRect = state.rect.filter(element => element.id === imageID);
-    //     if (filteredRect.length === 0 && isChanges) {
-    //         console.log("заполнение");
-    //         const newCroppedArea = {
-    //             id: pictures[currentIndex].fn_file,
-    //             name: pictures[currentIndex].fn_file,
-    //         };
-
-    //         setRect(newCroppedArea);
-    //     }
-    //     setIsChanges(false);
-    // }
 
     const deleteRect = () => {
         setIsChanges(true);
@@ -363,20 +335,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         );
     };
 
-    const emptyPicture = () => {
-        const newCroppedArea = {
-            id: pictures[currentIndex].fn_file,
-            name: pictures[currentIndex].fn_file,
-        };
-        setRect(newCroppedArea)
-    }
-
-    // const emptyPicture = () => {
-    //     const hasNoRect = state.rect.every(element => element.id !== pictures[currentIndex].fn_file);
-    //     if (hasNoRect) {
-    //     }
-    // }
-
     const checkPrev = () => {
         const filterRect = state.rect.filter(
             (element) => pictures[currentIndex].fn_file == element.id
@@ -391,7 +349,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             setState(parsedState);
             checkPrev();
         }
-        // pushImagesToStorage();
         pushDataToStorage("images");
     }, [currentIndex]);
 
@@ -420,7 +377,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }
 
     const notificationFunction = (message, color) => {
-        showNotification(message, color)
+        showNotification(message, color);
     }
 
     const sendDataToBack = async (imageID) => {
@@ -491,7 +448,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         onClick={() => swipeImage(STEP2)}
                         disabled={currentIndex == 0}
                     >
-                        {/* <img src={one_arrow_left} alt="" /> */}
                         <p>Назад [A]</p>
                     </button>
                     <p>{currentIndex + 1}/{pictures.length}</p>
@@ -500,7 +456,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         onClick={() => swipeImage(STEP1)}
                         disabled={currentIndex == (pictures.length - 1)}
                     >
-                        {/* <img src={one_arrow_right} alt="" /> */}
                         <p>Вперёд [D]</p>
                     </button>
                     <button
@@ -520,7 +475,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                             className={classes.prop_yellow}
                             onClick={deleteRect}
                         >Сброс [X]</button>
-                        {currentIndex === pictures.length - 1  && (
+                        {currentIndex === pictures.length - 1 && (
                             <button
                                 className={classes.prop_green}
                                 onClick={() => sendDataToBack(imageID)}
@@ -529,7 +484,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                     </section>
                     <div className={classes.container}>
                         <div className={classes.content_container}  >
-                            {/* {pictures.length > 0 && ( */}
                             <div className={classes.image_content} >
                                 <ReactCrop
                                     crop={crop}
@@ -540,9 +494,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                                     <div
                                         id="no_elements"
                                         style={{
-                                            // width: "100%",
-                                            // height: "100%",
-                                            // top: "40%",
                                             textAlign: "center",
                                             position: "absolute",
                                             fontSize: "50px",
@@ -559,6 +510,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                                         src={`${URL_IMAGE}${imageID}`}
                                         alt=""
                                         id="image"
+                                        ref={originalImageRef}
                                     />
                                     {croppedAreas.map((area, index) => {
                                         if (loading) {
