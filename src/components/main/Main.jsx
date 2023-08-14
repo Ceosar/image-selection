@@ -39,7 +39,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }
 
     const swipeImage = (arg) => {
-        sendDataToBack(pictures[currentIndex].fn_file);
+        // sendDataToBack();
         switch (arg) {
             case STEP1:
                 setCurrentIndex(currentIndex + 1);
@@ -55,6 +55,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             default:
                 break;
         }
+        sendDataToBack(pictures[currentIndex].fn_file);
         setCrop(null);
         setCroppedAreas([]);
         setSelectedType(DEFAULT_TYPE1);
@@ -110,11 +111,37 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         }
     }, [currentIndex])
 
+    const removeRectItems = () => {
+        console.log(imageID)
+        // const filteredRect = state.rect.filter(
+        //     (element) => element.id != pictures[currentIndex].fn_file && Object.keys(element).length !== 2
+        // );
+
+        const filteredRect = state.rect.filter((element) => {
+            const isMatching = element.id === pictures[currentIndex].fn_file && Object.keys(element).length === 2;
+            return !isMatching;
+        });
+
+        console.log(filteredRect)
+        setState((prevState) => ({
+            ...prevState,
+            rect: filteredRect
+        }));
+
+        localStorage.setItem(
+            "state",
+            JSON.stringify({ ...state, rect: filteredRect })
+        );
+
+    }
+
     const originalImage = document.getElementById("image");
     const onCompleteCrop = (crop) => {
         if (crop.width > 0 && crop.height > 0 && selectedType) {
             const scaleX = originalImage.naturalWidth / originalImage.width;
             const scaleY = originalImage.naturalHeight / originalImage.height;
+
+            removeRectItems();
 
             const newCroppedArea = {
                 name: pictures[currentIndex].fn_file,
@@ -159,6 +186,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }
 
     const setRect = (newCroppedArea) => {
+        console.log("setrect")
         setState((prevState) => ({
             ...prevState,
             rect: [...prevState.rect, newCroppedArea]
@@ -283,24 +311,40 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     const [isChanges, setIsChanges] = useState(false);
 
     useEffect(() => {
-        setIsChanges(true);
-        if(isChanges){
-            
-        }
-    },[state.rect, isChanges])
-
-    useEffect(() => {
         const filteredRect = state.rect.filter(element => element.id === imageID);
-        console.log(filteredRect);
-        console.log(isChanges)
-        if(filteredRect.length === 0 && isChanges){
+        // console.log(filteredRect.length === 0);
+        // console.log(isChanges);
+        if (filteredRect.length === 0 && isChanges) {
             console.log("заполнение")
-            setIsChanges(false);
+            const newCroppedArea = {
+                id: pictures[currentIndex].fn_file,
+                name: pictures[currentIndex].fn_file,
+            };
+            // setState(prevState => ({
+            //     ...prevState,
+            //     rect: [...prevState.rect, newCroppedArea]
+            // }));
+            setRect(newCroppedArea);
         }
         setIsChanges(false);
-    }, [currentIndex])
+    }, [currentIndex, isChanges])
+
+    // const pushEmptyPic = () => {
+    //     const filteredRect = state.rect.filter(element => element.id === imageID);
+    //     if (filteredRect.length === 0 && isChanges) {
+    //         console.log("заполнение");
+    //         const newCroppedArea = {
+    //             id: pictures[currentIndex].fn_file,
+    //             name: pictures[currentIndex].fn_file,
+    //         };
+
+    //         setRect(newCroppedArea);
+    //     }
+    //     setIsChanges(false);
+    // }
 
     const deleteRect = () => {
+        setIsChanges(true);
         notificationFunction("Сброс выполнен!", "red")
         noElemFill(0);
         setCroppedAreas([]);
@@ -317,15 +361,14 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             "state",
             JSON.stringify({ ...state, rect: filteredRect })
         );
-
     };
 
     const emptyPicture = () => {
-            const newCroppedArea = {
-                id: pictures[currentIndex].fn_file,
-                name: pictures[currentIndex].fn_file,
-            };
-            setRect(newCroppedArea)
+        const newCroppedArea = {
+            id: pictures[currentIndex].fn_file,
+            name: pictures[currentIndex].fn_file,
+        };
+        setRect(newCroppedArea)
     }
 
     // const emptyPicture = () => {
@@ -380,10 +423,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         showNotification(message, color)
     }
 
-    async function sendDataToBack(imageID) {
+    const sendDataToBack = async (imageID) => {
         try {
-            // const currentImage = img.images.find(image => image === imageID);
-            const filteredRect = state.rect.filter(element => element.id === imageID);
+            const stateFromLocal = JSON.parse(localStorage.getItem('state'));
+            const filteredRect = stateFromLocal.rect.filter(element => element.id === imageID);
             if (filteredRect.length > 0) {
                 const response = await axios({
                     method: 'post',
@@ -408,13 +451,14 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                 console.log(response.data[0].code)
                 if (response.data[0].code === 200) {
                     notificationFunction("Успешно!", "green")
-                } else (
-                    notificationFunction("УПС! Произошла ошибка!", "red")
-                )
+                }
+            } else {
+                console.log(filteredRect);
             }
         }
         catch (error) {
             console.log(error)
+            notificationFunction("УПС! Произошла ошибка!", "red")
         }
     }
 
@@ -476,10 +520,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                             className={classes.prop_yellow}
                             onClick={deleteRect}
                         >Сброс [X]</button>
-                        <button
-                            className={classes.prop_green}
-                            onClick={() => sendDataToBack(imageID)}
-                        >Готово</button>
+                        {currentIndex === pictures.length - 1  && (
+                            <button
+                                className={classes.prop_green}
+                                onClick={() => sendDataToBack(imageID)}
+                            >Готово</button>
+                        )}
                     </section>
                     <div className={classes.container}>
                         <div className={classes.content_container}  >
