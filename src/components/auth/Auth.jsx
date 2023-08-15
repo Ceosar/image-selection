@@ -3,7 +3,7 @@ import { URL } from "../../helpers/constants";
 import classes from "./Auth.module.css";
 import axios from "axios";
 
-const Auth = ({ setToken }) => {
+const Auth = ({ setUserID, setToken }) => {
     const [UserName, setUserName] = useState('');
     const [Password, setPassword] = useState('');
 
@@ -26,6 +26,8 @@ const Auth = ({ setToken }) => {
                 setPassword("");
                 // localStorage.setItem('Token', response.data['token']);
                 setToken(response.data['token']);
+                // console.log(response.data.user.id)
+                setUserID(response.data.user.id)
             })
             .catch(error => {
                 console.log(error);

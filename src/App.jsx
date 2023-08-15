@@ -12,8 +12,8 @@ function App() {
   const [pictures, setPictures] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [meterData, setMeterData] = useState([]);
-
   const [notification, setNotification] = useState(false);
+  const [userID, setUserID] = useState();
 
   const showNotification = (message, color) => {
     setNotification({
@@ -45,6 +45,7 @@ function App() {
               pictures={pictures}
               setPictures={setPictures}
               currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
               setToken={setToken}
               token={token}
               showNotification={showNotification}
@@ -65,7 +66,9 @@ function App() {
           </footer>
         </>
       ) : (
-        <Auth setToken={setToken} />
+        <div className='auth_app'>
+          <Auth setToken={setToken} />
+        </div>
       )}
     </div>
   )

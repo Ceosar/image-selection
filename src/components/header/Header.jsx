@@ -3,7 +3,7 @@ import classes from "./Header.module.css"
 import axios from "axios";
 import { URL } from "../../helpers/constants";
 
-const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, token, showNotification }) => {
+const Header = ({ setMeterData, pictures, setPictures, currentIndex , setCurrentIndex, setToken, token, showNotification }) => {
 
     async function getPictures(counts) {
         if(counts === undefined){
@@ -78,8 +78,10 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex, setToken, t
     }
 
     async function handlerUpload(counts) {
+        setCurrentIndex(0);
         const _pictures = await getPictures(counts);
         setPictures(_pictures);
+        console.log(_pictures)
     }
 
     useEffect(() => {

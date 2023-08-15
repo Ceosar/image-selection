@@ -32,7 +32,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     const [img, setImg] = useState({ images: [] })
     const [noElements, setNoElements] = useState(false);
     const [loading, setLoading] = useState(0);
-
     const isLoading = () => {
         setLoading(1);
     }
@@ -134,7 +133,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         if (crop.width > 0 && crop.height > 0 && selectedType) {
             const scaleX = originalImage.naturalWidth / originalImage.width;
             const scaleY = originalImage.naturalHeight / originalImage.height;
-
             removeRectItems();
 
             const newCroppedArea = {
@@ -176,6 +174,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             setRect(copyCroppedArea);
             console.log(document.getElementById("image").naturalWidth);
             console.log(document.getElementById("image").naturalHeight);
+
         }
     }
 
@@ -384,31 +383,61 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         try {
             const stateFromLocal = JSON.parse(localStorage.getItem('state'));
             const filteredRect = stateFromLocal.rect.filter(element => element.id === imageID);
+            console.log(originalImage.naturalHeight)
+            console.log(pictures[currentIndex].fn_result)
             if (filteredRect.length > 0) {
+                const imageBlob = await fetch(`${URL_IMAGE}${imageID}`).then(res => res.blob());
+                // const blob = new Blob([`${URL_IMAGE}${imageID}`],{type: 'logo.png'})
+                // var bodyFormData = new FormData();
+                // bodyFormData.append('file', blob);
+                var bodyFormData = new FormData();
+                bodyFormData.append('file', imageBlob, `${imageID}.png`);
+                bodyFormData.append('path', `/${imageID}.jpg`);
+                bodyFormData.append('f_result', pictures[currentIndex].fn_result);
+                bodyFormData.append('data', JSON.stringify(filteredRect));
                 const response = await axios({
                     method: 'post',
-                    url: `${URL}/rpc`,
+                    url: 'http://cic.it-serv.ru/machine-learning/release/file/private',
+                    data: bodyFormData,
                     headers: {
                         "rpc-authorization": `Token ${localStorage.getItem('Token')}`,
-                        "Content-Type": "application/json"
-                    },
-                    data: {
-                        action: "sd_attachments",
-                        method: "AddOrUpdate",
-                        "schema": "dbo",
-                        data: [{
-                            'id': imageID,
-                            'f_user': 3,
-                            'c_name': `${imageID}.jpg`,
-                            'jb_data': JSON.stringify(filteredRect),
-                        }],
-                        type: "rpc"
+                        "Content-Type": "multipart/form-data"
                     }
                 });
-                console.log(response.data[0].code)
-                if (response.data[0].code === 200) {
+                console.log(response)
+                console.log(response.data.code)
+                if (response.data.code === 200) {
                     notificationFunction("Успешно!", "green")
+                } else if (response.data.code === 500) {
+                    notificationFunction(`Ошибка ${response.data.meta.msg}`, "red")
                 }
+
+
+                // const response = await axios({
+                //     method: 'post',
+                //     url: `${URL}/rpc`,
+                //     headers: {
+                //         "rpc-authorization": `Token ${localStorage.getItem('Token')}`,
+                //         "Content-Type": "application/json"
+                //     },
+                //     data: {
+                //         action: "sd_attachments",
+                //         method: "AddOrUpdate",
+                //         "schema": "dbo",
+                //         data: [{
+                //             'id': imageID,
+                //             'f_user': userID,
+                //             'c_name': `${imageID}.jpg`,
+                //             'jb_data': JSON.stringify(filteredRect),
+                //             'c_dir' : `/${imageID}.jpg`
+                //         }],
+                //         type: "rpc"
+                //     }
+                // });
+                // console.log(response.data[0].code)
+                // if (response.data[0].code === 200) {
+                //     notificationFunction("Успешно!", "green")
+                // }
             } else {
                 console.log(filteredRect);
             }

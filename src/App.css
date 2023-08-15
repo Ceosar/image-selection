@@ -24,3 +24,8 @@ body {
 .main {
   flex-grow: 1;
 }
+
+.auth_app{
+  width: 100%;
+  height: 100vh;
+}
