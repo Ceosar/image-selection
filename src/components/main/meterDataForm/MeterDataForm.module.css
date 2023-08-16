@@ -1,3 +1,11 @@
+.meter_data_form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
 .input_meter_data {
     /* opacity: 0; */
     border: 2px solid rgb(39, 39, 41);
@@ -12,4 +20,5 @@
     color: white;
     padding: 5px;
     border-radius: 5px;
+    cursor: default;
 }

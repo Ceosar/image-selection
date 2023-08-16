@@ -46,7 +46,7 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
     }, [state.rect, currentIndex])
 
     return (
-        <>
+        <section className={classes.meter_data_form}>
             <label htmlFor="">Показание счётчика</label>
             <div
                 className={classes.input_meter_data}
@@ -71,7 +71,7 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
             </div>
             <label>Итоговое показание</label>
             <div>{resultMeter}</div>
-        </>
+        </section>
     );
 }
 

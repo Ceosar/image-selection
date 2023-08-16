@@ -47,13 +47,14 @@ const Auth = ({ setUserID, setToken }) => {
                         <label>Введите ваш пароль</label>
                         <input placeholder="Пароль" type="password" id="password" onChange={event => setPassword(event.target.value)} />
                     </div>
-                    <div className={classes.enter_btn}>
-                        <button
-                            type="submit"
-                            id="enter_btn"
-                            onClick={handleSubmit}
-                        >Войти</button>
-                    </div>
+                    {/* <div className={classes.enter_btn}> */}
+                    <button
+                        className={classes.enter_btn}
+                        type="submit"
+                        id="enter_btn"
+                        onClick={handleSubmit}
+                    >Войти</button>
+                    {/* </div> */}
                 </div>
             </div>
         </>

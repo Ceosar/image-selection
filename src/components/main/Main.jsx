@@ -114,7 +114,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             return !isMatching;
         });
 
-        console.log(filteredRect)
+        // console.log(filteredRect)
         setState((prevState) => ({
             ...prevState,
             rect: filteredRect
@@ -179,7 +179,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }
 
     const setRect = (newCroppedArea) => {
-        console.log("setrect")
         setState((prevState) => ({
             ...prevState,
             rect: [...prevState.rect, newCroppedArea]
@@ -304,7 +303,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     useEffect(() => {
         const filteredRect = state.rect.filter(element => element.id === imageID);
         if (filteredRect.length === 0 && isChanges) {
-            console.log("заполнение")
             const newCroppedArea = {
                 id: pictures[currentIndex].fn_file,
                 name: pictures[currentIndex].fn_file,
@@ -357,11 +355,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
 
     const showMeterData = (toggle) => {
         if (toggle) {
-            document.getElementById("meter-state").style.opacity = "1";
+            document.getElementById("meter-state").style.display = "flex";
             const inp = document.getElementById('input_meter_data');
             inp.focus();
+            inp.select();
         } else {
-            document.getElementById("meter-state").style.opacity = "0";
+            document.getElementById("meter-state").style.display = "none";
         }
     }
 
@@ -383,8 +382,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         try {
             const stateFromLocal = JSON.parse(localStorage.getItem('state'));
             const filteredRect = stateFromLocal.rect.filter(element => element.id === imageID);
-            console.log(originalImage.naturalHeight)
-            console.log(pictures[currentIndex].fn_result)
             if (filteredRect.length > 0) {
                 const imageBlob = await fetch(`${URL_IMAGE}${imageID}`).then(res => res.blob());
                 // const blob = new Blob([`${URL_IMAGE}${imageID}`],{type: 'logo.png'})
@@ -392,20 +389,21 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                 // bodyFormData.append('file', blob);
                 var bodyFormData = new FormData();
                 bodyFormData.append('file', imageBlob, `${imageID}.png`);
-                bodyFormData.append('path', `/${imageID}.jpg`);
+                bodyFormData.append('path', `/${imageID}.png`);
                 bodyFormData.append('f_result', pictures[currentIndex].fn_result);
                 bodyFormData.append('data', JSON.stringify(filteredRect));
+                // bodyFormData.append('id', imageID);
+
                 const response = await axios({
                     method: 'post',
                     url: 'http://cic.it-serv.ru/machine-learning/release/file/private',
                     data: bodyFormData,
+
                     headers: {
                         "rpc-authorization": `Token ${localStorage.getItem('Token')}`,
                         "Content-Type": "multipart/form-data"
                     }
                 });
-                console.log(response)
-                console.log(response.data.code)
                 if (response.data.code === 200) {
                     notificationFunction("Успешно!", "green")
                 } else if (response.data.code === 500) {
@@ -438,8 +436,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                 // if (response.data[0].code === 200) {
                 //     notificationFunction("Успешно!", "green")
                 // }
-            } else {
-                console.log(filteredRect);
             }
         }
         catch (error) {
@@ -449,22 +445,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }
 
     return (
-        <>
+        <div className={classes.main_container}>
             <div className={classes.main_wrapper}>
-                <section className={classes.type}>
-                    <button className={classes.type_btn_red}
-                        style={setButtonStyleBtn(DEFAULT_TYPE1)}
-                        onClick={() => swipeType(DEFAULT_TYPE1)}
-                    >Счётчик [Q]</button>
-                    <button className={classes.type_btn_green}
-                        style={setButtonStyleBtn(DEFAULT_TYPE2)}
-                        onClick={() => swipeType(DEFAULT_TYPE2)}
-                    >Пломба [W]</button>
-                    <button className={classes.type_btn_blue}
-                        style={setButtonStyleBtn(DEFAULT_TYPE3)}
-                        onClick={() => swipeType(DEFAULT_TYPE3)}
-                    >Показание [E]</button>
-                </section>
                 <section className={classes.navigation}>
                     <button
                         onClick={() => swipeImage(STEP3)}
@@ -495,6 +477,20 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                     </button>
                 </section>
                 <div className={classes.wrapper}>
+                    <section className={classes.type}>
+                        <button className={classes.type_btn_red}
+                            style={setButtonStyleBtn(DEFAULT_TYPE1)}
+                            onClick={() => swipeType(DEFAULT_TYPE1)}
+                        >Счётчик [Q]</button>
+                        <button className={classes.type_btn_green}
+                            style={setButtonStyleBtn(DEFAULT_TYPE2)}
+                            onClick={() => swipeType(DEFAULT_TYPE2)}
+                        >Пломба [W]</button>
+                        <button className={classes.type_btn_blue}
+                            style={setButtonStyleBtn(DEFAULT_TYPE3)}
+                            onClick={() => swipeType(DEFAULT_TYPE3)}
+                        >Показание [E]</button>
+                    </section>
                     <section className={classes.properties}>
                         <button
                             className={classes.prop_red}
@@ -507,7 +503,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         {currentIndex === pictures.length - 1 && (
                             <button
                                 className={classes.prop_green}
-                                onClick={() => sendDataToBack(imageID)}
                             >Готово</button>
                         )}
                     </section>
@@ -523,6 +518,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                                     <div
                                         id="no_elements"
                                         style={{
+                                            width: "100%",
                                             textAlign: "center",
                                             position: "absolute",
                                             fontSize: "50px",
@@ -563,20 +559,22 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                             </div>
                         </div>
                     </div>
-                    <section hidden className={classes.meter_data} id="meter-state">
-                        <MeterDataForm
-                            state={state}
-                            setState={setState}
-                            imageID={imageID}
-                            currentIndex={currentIndex}
-                            meterData={Math.round(meterData)}
-                            meterDataInput={meterDataInput}
-                            setMeterDataInput={setMeterDataInput}
-                        />
+                    <section className={classes.meter_data_wrapper}>
+                        <section className={classes.meter_data}  id="meter-state">
+                            <MeterDataForm
+                                state={state}
+                                setState={setState}
+                                imageID={imageID}
+                                currentIndex={currentIndex}
+                                meterData={Math.round(meterData)}
+                                meterDataInput={meterDataInput}
+                                setMeterDataInput={setMeterDataInput}
+                            />
+                        </section>
                     </section>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 

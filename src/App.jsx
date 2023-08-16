@@ -13,7 +13,6 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [meterData, setMeterData] = useState([]);
   const [notification, setNotification] = useState(false);
-  const [userID, setUserID] = useState();
 
   const showNotification = (message, color) => {
     setNotification({

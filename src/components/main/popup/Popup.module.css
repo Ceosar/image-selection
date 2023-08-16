@@ -1,4 +1,6 @@
 .popup_body_red{
+    opacity: 0.9;
+    z-index: 9999;
     top: 70px;
     left: 30px;
     width: 500px;
@@ -13,6 +15,8 @@
 }
 
 .popup_body_green{
+    opacity: 0.9;
+    z-index: 9999;
     top: 70px;
     left: 30px;
     width: 500px;
