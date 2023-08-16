@@ -47,8 +47,6 @@
 }
 
 .btn_inputs{
-    /* padding: 5px; */
-    /* margin: 5px; */
     background-color: rgb(255, 255, 255);
     border-radius: 50%;
     width: 40px;
@@ -57,21 +55,10 @@
 }
 
 .btn_inputs:hover{
-    background-color: azure;
+    box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+    scale: 105%;
 }
 
 .btn_inputs:active{
     background-color: green;
 }
-
-.input_photos input{
-}
-
-/* .input_photos button{
-    background-color: green;
-    color: white;
-    width: 20px;
-    height: 20px;
-    font-weight: 900;
-    border-radius: 50%;
-} */

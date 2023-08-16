@@ -1,16 +1,14 @@
 import { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import classes from "./Main.module.css"
 import ReactCrop from 'react-image-crop'
 import './ReactCrop.scss'
-import axios from "axios";
 
-import one_arrow_left from "../../assets/one_arrow_left.png"
-import one_arrow_right from "../../assets/one_arrow_right.png"
 import two_arrow_left from "../../assets/two_arrow_left.png"
 import two_arrow_right from "../../assets/two_arrow_right.png"
 import MeterDataForm from "./meterDataForm/meterDataForm";
 import {
-    URL,
+    URL_DB,
     URL_IMAGE,
     DEFAULT_TYPE1,
     DEFAULT_TYPE2,
@@ -32,6 +30,8 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     const [img, setImg] = useState({ images: [] })
     const [noElements, setNoElements] = useState(false);
     const [loading, setLoading] = useState(0);
+    const [isChanges, setIsChanges] = useState(false);
+
     const isLoading = () => {
         setLoading(1);
     }
@@ -69,6 +69,83 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         }
     }, [pictures, currentIndex]);
 
+    useEffect(() => {
+        if (state.rect.length > 0) {
+            state.rect.forEach((element) => {
+                if (
+                    element.name === pictures[currentIndex].fn_file
+                    &&
+                    element.type === "none"
+                ) {
+                    noElemFill(1);
+                }
+            })
+        }
+
+        const savedState = localStorage.getItem("state");
+        if (savedState) {
+            const parsedState = JSON.parse(savedState);
+            setState(parsedState);
+            checkPrev();
+        }
+        pushDataToStorage("images");
+    }, [currentIndex]);
+
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (e.target.id != "input_meter_data") {
+                switch (e.code) {
+                    case "KeyQ":
+                        swipeType(DEFAULT_TYPE1);
+                        break;
+                    case "KeyW":
+                        swipeType(DEFAULT_TYPE2);
+                        break;
+                    case "KeyE":
+                        swipeType(DEFAULT_TYPE3);
+                        e.preventDefault()
+                        break;
+                    case "KeyA":
+                        if (currentIndex > 0) swipeImage(STEP2);
+                        break;
+                    case "KeyD":
+                        if (currentIndex < pictures.length - 1) swipeImage(STEP1);
+                        break;
+                    case "KeyZ":
+                        noneType();
+                        break;
+                    case "KeyX":
+                        deleteRect();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        window.addEventListener('keypress', handleKeyPress);
+
+        return () => {
+            window.removeEventListener('keypress', handleKeyPress);
+        };
+    }, [currentIndex, pictures.length]);
+
+    useEffect(() => {
+        const filteredRect = state.rect.filter(element => element.id === imageID);
+        if (filteredRect.length === 0 && isChanges) {
+            const newCroppedArea = {
+                id: pictures[currentIndex].fn_file,
+                name: pictures[currentIndex].fn_file,
+            };
+            setRect(newCroppedArea);
+        }
+        setIsChanges(false);
+    }, [currentIndex, isChanges])
+
+    useEffect(() => {
+        pushDataToStorage("data");
+    }, [state]);
+
     const swipeType = (type) => {
         setCrop(null);
         switch (type) {
@@ -93,28 +170,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         }
     }
 
-    useEffect(() => {
-        if (state.rect.length > 0) {
-            state.rect.forEach((element) => {
-                if (
-                    element.name === pictures[currentIndex].fn_file
-                    &&
-                    element.type === "none"
-                ) {
-                    noElemFill(1);
-                }
-            })
-
-        }
-    }, [currentIndex])
-
     const removeRectItems = () => {
         const filteredRect = state.rect.filter((element) => {
             const isMatching = element.id === pictures[currentIndex].fn_file && Object.keys(element).length === 2;
             return !isMatching;
         });
 
-        // console.log(filteredRect)
         setState((prevState) => ({
             ...prevState,
             rect: filteredRect
@@ -135,27 +196,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             const scaleY = originalImage.naturalHeight / originalImage.height;
             removeRectItems();
 
-            const newCroppedArea = {
-                name: pictures[currentIndex].fn_file,
-                id: imageID,
-                x: crop.x,
-                y: crop.y,
-                width: crop.width,
-                height: crop.height,
-                type: selectedType
-            };
-            if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
-                newCroppedArea.meterData = meterDataInput;
-                const inp = document.getElementById('input_meter_data');
-                inp.focus();
-            }
-            if (selectedType === 'none') {
-                setNoElements(true);
-            }
-            else {
-                setNoElements(false);
-            }
-
             const copyCroppedArea = {
                 name: pictures[currentIndex].fn_file,
                 id: imageID,
@@ -166,8 +206,12 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                 type: selectedType
             };
             if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
-                newCroppedArea.meterData = meterDataInput;
+                copyCroppedArea.meterData = meterDataInput;
+                const inp = document.getElementById('input_meter_data');
+                inp.focus();
             }
+
+            selectedType==='none' ? setNoElements(true) : setNoElements(false);
 
             setCroppedAreas([...croppedAreas, copyCroppedArea]);
             setCrop(null);
@@ -232,45 +276,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         }
     }
 
-    useEffect(() => {
-        const handleKeyPress = (e) => {
-            if (e.target.id != "input_meter_data") {
-                switch (e.code) {
-                    case "KeyQ":
-                        swipeType(DEFAULT_TYPE1);
-                        break;
-                    case "KeyW":
-                        swipeType(DEFAULT_TYPE2);
-                        break;
-                    case "KeyE":
-                        swipeType(DEFAULT_TYPE3);
-                        e.preventDefault()
-                        break;
-                    case "KeyA":
-                        if (currentIndex > 0) swipeImage(STEP2);
-                        break;
-                    case "KeyD":
-                        if (currentIndex < pictures.length - 1) swipeImage(STEP1);
-                        break;
-                    case "KeyZ":
-                        noneType();
-                        break;
-                    case "KeyX":
-                        deleteRect();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        window.addEventListener('keypress', handleKeyPress);
-
-        return () => {
-            window.removeEventListener('keypress', handleKeyPress);
-        };
-    }, [currentIndex, pictures.length]);
-
     const noneType = () => {
         noElemFill(1);
 
@@ -298,23 +303,9 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         setRect(newCroppedArea);
     }
 
-    const [isChanges, setIsChanges] = useState(false);
-
-    useEffect(() => {
-        const filteredRect = state.rect.filter(element => element.id === imageID);
-        if (filteredRect.length === 0 && isChanges) {
-            const newCroppedArea = {
-                id: pictures[currentIndex].fn_file,
-                name: pictures[currentIndex].fn_file,
-            };
-            setRect(newCroppedArea);
-        }
-        setIsChanges(false);
-    }, [currentIndex, isChanges])
-
     const deleteRect = () => {
         setIsChanges(true);
-        notificationFunction("Сброс выполнен!", "red")
+        notificationFunction("Сброс выполнен!", "red");
         noElemFill(0);
         setCroppedAreas([]);
         const filteredRect = state.rect.filter(
@@ -339,20 +330,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         setCroppedAreas(filterRect);
     }
 
-    useEffect(() => {
-        const savedState = localStorage.getItem("state");
-        if (savedState) {
-            const parsedState = JSON.parse(savedState);
-            setState(parsedState);
-            checkPrev();
-        }
-        pushDataToStorage("images");
-    }, [currentIndex]);
-
-    useEffect(() => {
-        pushDataToStorage("data");
-    }, [state]);
-
     const showMeterData = (toggle) => {
         if (toggle) {
             document.getElementById("meter-state").style.display = "flex";
@@ -367,7 +344,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     const noElemFill = (arg) => {
         if (arg) {
             setNoElements(true)
-            document.getElementById("no_elements").style.opacity = "1"
+            document.getElementById("no_elements").style.opacity = "1";
         } else {
             setNoElements(false);
             document.getElementById("no_elements").style.opacity = "0";
@@ -384,19 +361,16 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             const filteredRect = stateFromLocal.rect.filter(element => element.id === imageID);
             if (filteredRect.length > 0) {
                 const imageBlob = await fetch(`${URL_IMAGE}${imageID}`).then(res => res.blob());
-                // const blob = new Blob([`${URL_IMAGE}${imageID}`],{type: 'logo.png'})
-                // var bodyFormData = new FormData();
-                // bodyFormData.append('file', blob);
+
                 var bodyFormData = new FormData();
                 bodyFormData.append('file', imageBlob, `${imageID}.png`);
                 bodyFormData.append('path', `/${imageID}.png`);
                 bodyFormData.append('f_result', pictures[currentIndex].fn_result);
                 bodyFormData.append('data', JSON.stringify(filteredRect));
-                // bodyFormData.append('id', imageID);
 
                 const response = await axios({
                     method: 'post',
-                    url: 'http://cic.it-serv.ru/machine-learning/release/file/private',
+                    url: `${URL_DB}`,
                     data: bodyFormData,
 
                     headers: {
@@ -404,43 +378,13 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         "Content-Type": "multipart/form-data"
                     }
                 });
-                if (response.data.code === 200) {
-                    notificationFunction("Успешно!", "green")
-                } else if (response.data.code === 500) {
-                    notificationFunction(`Ошибка ${response.data.meta.msg}`, "red")
-                }
 
-
-                // const response = await axios({
-                //     method: 'post',
-                //     url: `${URL}/rpc`,
-                //     headers: {
-                //         "rpc-authorization": `Token ${localStorage.getItem('Token')}`,
-                //         "Content-Type": "application/json"
-                //     },
-                //     data: {
-                //         action: "sd_attachments",
-                //         method: "AddOrUpdate",
-                //         "schema": "dbo",
-                //         data: [{
-                //             'id': imageID,
-                //             'f_user': userID,
-                //             'c_name': `${imageID}.jpg`,
-                //             'jb_data': JSON.stringify(filteredRect),
-                //             'c_dir' : `/${imageID}.jpg`
-                //         }],
-                //         type: "rpc"
-                //     }
-                // });
-                // console.log(response.data[0].code)
-                // if (response.data[0].code === 200) {
-                //     notificationFunction("Успешно!", "green")
-                // }
+                response.data.code === 200 ? notificationFunction("Успешно!", "green") : notificationFunction(`Ошибка ${response.data.meta.msg}`, "red");
             }
         }
         catch (error) {
-            console.log(error)
-            notificationFunction("УПС! Произошла ошибка!", "red")
+            console.log(error);
+            notificationFunction("УПС! Произошла ошибка!", "red");
         }
     }
 
@@ -560,7 +504,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         </div>
                     </div>
                     <section className={classes.meter_data_wrapper}>
-                        <section className={classes.meter_data}  id="meter-state">
+                        <section className={classes.meter_data} id="meter-state">
                             <MeterDataForm
                                 state={state}
                                 setState={setState}

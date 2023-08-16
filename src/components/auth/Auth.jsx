@@ -3,7 +3,7 @@ import { URL } from "../../helpers/constants";
 import classes from "./Auth.module.css";
 import axios from "axios";
 
-const Auth = ({ setUserID, setToken }) => {
+const Auth = ({ setToken }) => {
     const [UserName, setUserName] = useState('');
     const [Password, setPassword] = useState('');
 
@@ -24,10 +24,7 @@ const Auth = ({ setUserID, setToken }) => {
             .then(response => {
                 setUserName("");
                 setPassword("");
-                // localStorage.setItem('Token', response.data['token']);
                 setToken(response.data['token']);
-                // console.log(response.data.user.id)
-                setUserID(response.data.user.id)
             })
             .catch(error => {
                 console.log(error);
@@ -47,14 +44,12 @@ const Auth = ({ setUserID, setToken }) => {
                         <label>Введите ваш пароль</label>
                         <input placeholder="Пароль" type="password" id="password" onChange={event => setPassword(event.target.value)} />
                     </div>
-                    {/* <div className={classes.enter_btn}> */}
                     <button
                         className={classes.enter_btn}
                         type="submit"
                         id="enter_btn"
                         onClick={handleSubmit}
                     >Войти</button>
-                    {/* </div> */}
                 </div>
             </div>
         </>
