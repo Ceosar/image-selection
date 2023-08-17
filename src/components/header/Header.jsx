@@ -51,8 +51,6 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex , setCurrent
                     method: "Query",
                     "schema": "dbo",
                     data: [{
-                        'id': '',
-                        'jb': '',
                         filter: [{
                             "property": "fn_result",
                             "value": fn_result

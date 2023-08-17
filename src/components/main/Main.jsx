@@ -19,6 +19,7 @@ import {
     STEP4
 } from "../../helpers/constants";
 
+
 const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotification }) => {
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
@@ -27,10 +28,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     const [imageID, setImageId] = useState('');
     const [meterDataInput, setMeterDataInput] = useState("");
     const [state, setState] = useState({ rect: [] })
-    const [img, setImg] = useState({ images: [] })
     const [noElements, setNoElements] = useState(false);
     const [loading, setLoading] = useState(0);
     const [isChanges, setIsChanges] = useState(false);
+
 
     const isLoading = () => {
         setLoading(1);
@@ -65,7 +66,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     useEffect(() => {
         if (pictures.length > 0) {
             setImageId(pictures[currentIndex].fn_file);
-            setImages(pictures[currentIndex].fn_file);
         }
     }, [pictures, currentIndex]);
 
@@ -88,7 +88,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             setState(parsedState);
             checkPrev();
         }
-        pushDataToStorage("images");
+        pushDataToStorage();
     }, [currentIndex]);
 
     useEffect(() => {
@@ -143,7 +143,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     }, [currentIndex, isChanges])
 
     useEffect(() => {
-        pushDataToStorage("data");
+        pushDataToStorage();
     }, [state]);
 
     const swipeType = (type) => {
@@ -229,34 +229,9 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         }));
     };
 
-    const setImages = (newImagesName) => {
-        const imagesName = JSON.parse(localStorage.getItem('state2'));
-        try {
-            const updatedArray = imagesName.images.slice();
-            if (!updatedArray.includes(newImagesName)) {
-                setImg((prevImg) => ({
-                    ...prevImg,
-                    images: [...prevImg.images, newImagesName],
-                }));
-            }
-        } catch (error) {
-            console.log(error);
-        }
+    const pushDataToStorage = () => {
+        localStorage.setItem("state", JSON.stringify(state));
     }
-
-    const pushDataToStorage = (arg) => {
-        switch (arg) {
-            case "data":
-                localStorage.setItem("state", JSON.stringify(state));
-                break;
-            case "images":
-                localStorage.setItem("state2", JSON.stringify(img));
-                break;
-            default:
-                break;
-        }
-    }
-
     const getBorderColorByType = (type) => {
         switch (type) {
             case DEFAULT_TYPE1:
