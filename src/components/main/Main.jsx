@@ -459,10 +459,10 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                                                     height: '100%',
                                                     position: "absolute",
                                                     border: `4px solid ${getBorderColorByType(area.type)}`,
-                                                    left: area.x / (originalImage.naturalWidth / originalImage.width),
-                                                    top: area.y / (originalImage.naturalHeight / originalImage.height),
-                                                    width: area.width / (originalImage.naturalWidth / originalImage.width),
-                                                    height: area.height / (originalImage.naturalHeight / originalImage.height)
+                                                    left: originalImage.naturalWidth !== 0 ? area.x / (originalImage.naturalWidth / originalImage.width) : 0,
+                                                    top: originalImage.naturalHeight !== 0 ? area.y / (originalImage.naturalHeight / originalImage.height) : 0,
+                                                    width: originalImage.naturalWidth !== 0 ? area.width / (originalImage.naturalWidth / originalImage.width) : 0,
+                                                    height: originalImage.naturalHeight !== 0 ? area.height / (originalImage.naturalHeight / originalImage.height) : 0
                                                 }}
                                             />
                                         }

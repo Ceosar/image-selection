@@ -130,6 +130,10 @@
     background-color: green;
 }
 
+.image{
+    border-radius: 5px;
+}
+
 .meter_data_wrapper{
     margin-top: 25px;
     min-width: 255px;
