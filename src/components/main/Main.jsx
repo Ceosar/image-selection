@@ -24,7 +24,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     const [crop, setCrop] = useState(null);
     const [croppedAreas, setCroppedAreas] = useState([]);
     const [selectedType, setSelectedType] = useState(DEFAULT_TYPE1);
-    const [activeType, setActiveType] = useState(DEFAULT_TYPE1);
     const [imageID, setImageId] = useState('');
     const [meterDataInput, setMeterDataInput] = useState("");
     const [state, setState] = useState({ rect: [] })
@@ -57,7 +56,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         setCrop(null);
         setCroppedAreas([]);
         setSelectedType(DEFAULT_TYPE1);
-        setActiveType(DEFAULT_TYPE1);
         showMeterData(0);
         noElemFill(0);
         setLoading(0);
@@ -151,17 +149,14 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         switch (type) {
             case DEFAULT_TYPE1:
                 setSelectedType(DEFAULT_TYPE1);
-                setActiveType(DEFAULT_TYPE1);
                 showMeterData(0);
                 break;
             case DEFAULT_TYPE2:
                 setSelectedType(DEFAULT_TYPE2);
-                setActiveType(DEFAULT_TYPE2);
                 showMeterData(0);
                 break;
             case DEFAULT_TYPE3:
                 setSelectedType(DEFAULT_TYPE3);
-                setActiveType(DEFAULT_TYPE3);
                 showMeterData(1);
                 break;
 
@@ -247,7 +242,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
 
     const setButtonStyleBtn = (type) => {
         return {
-            backgroundColor: activeType === type ? "orange" : "initial"
+            backgroundColor: selectedType === type ? "orange" : "initial"
         }
     }
 
