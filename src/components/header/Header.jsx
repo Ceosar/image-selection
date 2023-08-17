@@ -3,12 +3,10 @@ import classes from "./Header.module.css"
 import axios from "axios";
 import { URL } from "../../helpers/constants";
 
-const Header = ({ setMeterData, pictures, setPictures, currentIndex , setCurrentIndex, setToken, token, showNotification}) => {
+const Header = ({ setMeterData, pictures, setPictures, currentIndex, setCurrentIndex, setToken, token, showNotification }) => {
 
     async function getPictures(counts) {
-        if(counts === undefined){
-            counts = 10;
-        }
+        counts === undefined ? counts = 10 : '';
         notificationFunction(`Выполняется загрузка ${counts} фотографий`, "green");
         const response = await axios({
             method: 'post',
@@ -36,43 +34,32 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex , setCurrent
     }
 
     async function getMeterReadings(fn_result) {
-        let pageNum = 1;
-        let foundPic = false;
-        while (!foundPic) {
-            const response2 = await axios({
-                method: 'post',
-                url: `${URL}/rpc`,
-                headers: {
-                    "rpc-authorization": `Token ${token}`,
-                    "Content-Type": "application/json"
-                },
-                data: {
-                    action: "dd_meter_readings",
-                    method: "Query",
-                    "schema": "dbo",
-                    data: [{
-                        filter: [{
-                            "property": "fn_result",
-                            "value": fn_result
-                        }
-                        ]
-                    }],
-                    type: "rpc"
-                }
-            })
-            const records = response2.data[0].result.records;
-
-            for (const record of records) {
-                if (record.fn_result = fn_result) {
-                    setMeterData(record.n_value);
-                    foundPic = true;
-                    break;
-                }
+        const response2 = await axios({
+            method: 'post',
+            url: `${URL}/rpc`,
+            headers: {
+                "rpc-authorization": `Token ${token}`,
+                "Content-Type": "application/json"
+            },
+            data: {
+                action: "dd_meter_readings",
+                method: "Query",
+                "schema": "dbo",
+                data: [{
+                    filter: [{
+                        "property": "fn_result",
+                        "value": fn_result
+                    }
+                    ]
+                }],
+                type: "rpc"
             }
+        })
 
-            pageNum++;
-            return response2;
-        }
+        const foundRecords = response2.data[0].result.records.find(record => record.fn_result === fn_result);
+        foundRecords ? setMeterData(foundRecords.n_value) : setMeterData('');
+
+        return response2;
     }
 
     async function handlerUpload(counts) {
@@ -86,10 +73,7 @@ const Header = ({ setMeterData, pictures, setPictures, currentIndex , setCurrent
     }, [])
 
     useEffect(() => {
-        if (pictures.length > 0) {
-            getMeterReadings(pictures[currentIndex].fn_result);
-            setMeterData('');
-        }
+        pictures.length > 0 ? getMeterReadings(pictures[currentIndex].fn_result) : '';
     }, [pictures, currentIndex])
 
     const handleExit = () => {
