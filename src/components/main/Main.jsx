@@ -31,11 +31,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
     const [loading, setLoading] = useState(0);
     const [isChanges, setIsChanges] = useState(false);
 
-
-    const isLoading = () => {
-        setLoading(1);
-    }
-
     const swipeImage = (arg) => {
         switch (arg) {
             case STEP1:
@@ -202,11 +197,11 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             };
             if (selectedType === DEFAULT_TYPE3 && meterDataInput) {
                 copyCroppedArea.meterData = meterDataInput;
-                const inp = document.getElementById('input_meter_data');
+                const inp = meterStateRef.current.querySelector('#input_meter_data');
                 inp.focus();
             }
 
-            selectedType==='none' ? setNoElements(true) : setNoElements(false);
+            selectedType === 'none' ? setNoElements(true) : setNoElements(false);
 
             setCroppedAreas([...croppedAreas, copyCroppedArea]);
             setCrop(null);
@@ -300,24 +295,26 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
         setCroppedAreas(filterRect);
     }
 
+    const meterStateRef = useRef(null);
     const showMeterData = (toggle) => {
         if (toggle) {
-            document.getElementById("meter-state").style.display = "flex";
-            const inp = document.getElementById('input_meter_data');
+            meterStateRef.current.style.display = "flex";
+            const inp = meterStateRef.current.querySelector('#input_meter_data');
             inp.focus();
             inp.select();
         } else {
-            document.getElementById("meter-state").style.display = "none";
+            meterStateRef.current.style.display = "none";
         }
     }
 
+    const noElementsRef = useRef(null);
     const noElemFill = (arg) => {
         if (arg) {
             setNoElements(true)
-            document.getElementById("no_elements").style.opacity = "1";
+            noElementsRef.current.style.opacity = "1";
         } else {
             setNoElements(false);
-            document.getElementById("no_elements").style.opacity = "0";
+            noElementsRef.current.style.opacity = "0";
         }
     }
 
@@ -431,6 +428,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                                 >
                                     <div
                                         id="no_elements"
+                                        ref={noElementsRef}
                                         style={{
                                             width: "100%",
                                             textAlign: "center",
@@ -444,7 +442,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                                         }}
                                     >Нет элеменmов</div>
                                     <img
-                                        onLoad={isLoading}
+                                        onLoad={() => setLoading(1)}
                                         className={`${classes.image} ${noElements ? classes.no_elem : ''}`}
                                         src={`${URL_IMAGE}${imageID}`}
                                         alt=""
@@ -474,7 +472,7 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
                         </div>
                     </div>
                     <section className={classes.meter_data_wrapper}>
-                        <section className={classes.meter_data} id="meter-state">
+                        <section className={classes.meter_data} id="meter-state" ref={meterStateRef}>
                             <MeterDataForm
                                 state={state}
                                 setState={setState}

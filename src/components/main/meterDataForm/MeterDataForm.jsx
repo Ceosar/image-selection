@@ -50,6 +50,7 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
             <label htmlFor="">Показание счётчика</label>
             <div
                 className={classes.input_meter_data}
+                // ref={meterDataRef}
                 id="input_form_meter_data"
             >
                 <input
