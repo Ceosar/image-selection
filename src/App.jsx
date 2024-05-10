@@ -1,7 +1,5 @@
-import { Suspense, useEffect, useState, lazy } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
-import Footer from './components/footer/Footer'
-import Loading from './components/loading/Loading'
 import Main from './components/main/Main'
 import Header from './components/header/Header'
 import Auth from './components/auth/Auth'

@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classes from './MeterDataForm.module.css'
 
 
 const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, meterDataInput, setMeterDataInput }) => {
     const [resultMeter, setResultMeter] = useState();
+    const meterDataInputRef = useRef(null)
+
     useEffect(() => {
-        document.getElementById("input_meter_data").value = meterData;
-        setMeterDataInput(document.getElementById("input_meter_data").value);
+        meterDataInputRef.current.value = meterData;
+        setMeterDataInput(meterDataInputRef.current.value);
     }, [meterData])
 
     const handleMeterDataInput = (e) => {
@@ -50,12 +52,12 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
             <label htmlFor="">Показание счётчика</label>
             <div
                 className={classes.input_meter_data}
-                // ref={meterDataRef}
                 id="input_form_meter_data"
-            >
+                >
                 <input
                     type="number"
                     onChange={handleMeterDataInput}
+                    ref={meterDataInputRef}
                     id="input_meter_data"
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -66,7 +68,6 @@ const MeterDataForm = ({ state, setState, imageID, currentIndex, meterData, mete
                             e.preventDefault();
                         }
                     }}
-                    // onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
                 />
                 <button
                     id="input_meter_btn"

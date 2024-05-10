@@ -175,7 +175,6 @@ const Main = ({ meterData, pictures, currentIndex, setCurrentIndex, showNotifica
             "state",
             JSON.stringify({ ...state, rect: filteredRect })
         );
-
     }
 
     const originalImageRef = useRef(null);
