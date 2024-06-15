@@ -22,7 +22,7 @@
 1. Склонируйте репозиторий приложения на ваш локальный компьютер:
 
     ```bash
-    git clone https://Ceosar.github.com/image-selection/image-selection.git
+    git clone https://github.com/Ceosar/image-selection.git
     ```
 
 2. Перейдите в каталог проекта:
